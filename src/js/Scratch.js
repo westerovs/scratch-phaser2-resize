@@ -13,7 +13,11 @@ export default class Scratch {
     this.minAlphaRatio = minAlphaRatio
     this.disabled = false
     this.position = position
-    
+  
+    this.prevPos = {
+      x: this.sprite.x,
+      y: this.sprite.y,
+    }
     this.init()
 }
   
@@ -84,17 +88,43 @@ export default class Scratch {
     const width = this.sprite.width
     const height = this.sprite.height
 
-    const rect = (x, y) => new Phaser.Rectangle(x, y, width, height)
-
+    const setRectArea = (x, y) => new Phaser.Rectangle(x, y, width, height)
+    console.warn('prevPos:', this.prevPos)
+    
     if (window.matchMedia('(orientation: portrait)').matches) {
       console.log('--- portrait --- ')
-      this.bitmapData.copyRect(this.bitmapData, rect(width, height), this.position.portrait.x, this.position.portrait.y)
-      this.bitmapData.clear(width, height, this.sprite.width, this.sprite.height)
+  
+      // если совпадает точка отсчёта, то копировать не нужно
+      if (this.prevPos.x === this.sprite.position.x || this.prevPos.y === this.sprite.position.y) return
+      
+      this.bitmapData.copyRect(this.bitmapData,
+        setRectArea(this.prevPos.x, this.prevPos.y),
+        this.position.portrait.x,
+        this.position.portrait.y,
+      )
+  
+      
+      this.bitmapData.clear(this.prevPos.x, this.prevPos.y, width, height)
+      this.prevPos = {
+        x: this.position.portrait.x,
+        y: this.position.portrait.y,
+      }
     }
+    
     if (window.matchMedia('(orientation: landscape)').matches) {
       console.log('--- landscape --- ')
-      this.bitmapData.copyRect(this.bitmapData, rect(0, 0), this.position.landscape.x, this.position.landscape.y)
-      this.bitmapData.clear(0, 0, this.sprite.width, this.sprite.height)
+      this.bitmapData.copyRect(this.bitmapData,
+        setRectArea(this.prevPos.x, this.prevPos.y),
+        this.position.landscape.x,
+        this.position.landscape.y,
+      )
+      // if (this.prevPos.x !== this.sprite.position.x || this.prevPos.y !== this.sprite.position.y) {
+        this.bitmapData.clear(this.prevPos.x, this.prevPos.y, width, height)
+        this.prevPos = {
+          x: this.position.landscape.x,
+          y: this.position.landscape.y,
+        }
+      // }
     }
   }
   

@@ -13,8 +13,8 @@ class Game {
   
     this.POS1 = {
       landscape: {
-        x: 200,
-        y: 200,
+        x: 400,
+        y: 400,
       },
       portrait: {
         x: 0,
@@ -23,12 +23,22 @@ class Game {
     }
     this.POS2 = {
       landscape: {
-        x: 200,
-        y: 200,
+        x: 600,
+        y: 400,
       },
       portrait: {
         x: 0,
         y: 200,
+      },
+    }
+    this.POS3 = {
+      landscape: {
+        x: 600,
+        y: 600,
+      },
+      portrait: {
+        x: 0,
+        y: 400,
       },
     }
   }
@@ -58,10 +68,10 @@ class Game {
     
     console.clear()
     this.game.add.image(0, 0, 'bg')
-    this.coverSprite1 = this.game.make.sprite(0, 0, 'block1')
-    this.coverSprite2 = this.game.make.sprite(0, 0, 'block2')
-    this.coverSprite3 = this.game.make.sprite(0, 300, 'block1')
-    this.coverSprite4 = this.game.make.sprite(0, 300, 'block2')
+    this.coverSprite1 = this.game.make.sprite(null, null, 'block1')
+    this.coverSprite2 = this.game.make.sprite(null, null, 'block2')
+    this.coverSprite3 = this.game.make.sprite(null, null, 'block1')
+    this.coverSprite4 = this.game.make.sprite(null, null, 'block2')
   
     // this.group = this.game.make.group()
     // this.group.add(this.coverSprite2)
@@ -71,9 +81,6 @@ class Game {
     this.bitmapData = this.game.make.bitmapData(1366, 1366)
     this.bitmapData.addToWorld(0, 0)
   
-    // draw
-    // this.bitmapData.draw(this.coverSprite1)
-    
     this.scratch1 = new Scratch({
       game: this.game,
       sprite: this.coverSprite1,
@@ -82,13 +89,21 @@ class Game {
       position: this.POS1
     })
     
-    // this.scratch2 = new Scratch({
-    //   game: this.game,
-    //   sprite: this.coverSprite2,
-    //   minAlphaRatio: 0.015,
-    //   bitmapData: this.bitmapData,
-    //   position: this.POS2
-    // })
+    this.scratch2 = new Scratch({
+      game: this.game,
+      sprite: this.coverSprite2,
+      minAlphaRatio: 0.015,
+      bitmapData: this.bitmapData,
+      position: this.POS2
+    })
+    
+    this.scratch3 = new Scratch({
+      game: this.game,
+      sprite: this.coverSprite1,
+      minAlphaRatio: 0.015,
+      bitmapData: this.bitmapData,
+      position: this.POS3
+    })
   }
   
   update = () => {

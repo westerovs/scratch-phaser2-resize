@@ -87,20 +87,22 @@ class Game {
       bitmapData: this.bitmapData,
       spritePos: this.POS1
     })
-    this.scratch2 = new Scratch({
-      game: this.game,
-      sprite: this.coverSprite2,
-      minAlphaRatio: 0.01,
-      bitmapData: this.bitmapData,
-      spritePos: this.POS2
-    })
-    this.scratch3 = new Scratch({
-      game: this.game,
-      sprite: this.coverSprite3,
-      minAlphaRatio: 0.01,
-      bitmapData: this.bitmapData,
-      spritePos: this.POS3
-    })
+    
+    // this.scratch2 = new Scratch({
+    //   game: this.game,
+    //   sprite: this.coverSprite2,
+    //   minAlphaRatio: 0.01,
+    //   bitmapData: this.bitmapData,
+    //   spritePos: this.POS2
+    // })
+    
+    // this.scratch3 = new Scratch({
+    //   game: this.game,
+    //   sprite: this.coverSprite3,
+    //   minAlphaRatio: 0.01,
+    //   bitmapData: this.bitmapData,
+    //   spritePos: this.POS3
+    // })
 
     this.setPosition()
     window.addEventListener('resize', () => this.setPosition())

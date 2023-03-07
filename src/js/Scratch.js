@@ -21,6 +21,7 @@ export default class Scratch {
       y: this.sprite.y,
     }
   
+    this.pressed = false
     this.currentPos = {
       x: null,
       y: null,
@@ -39,9 +40,24 @@ export default class Scratch {
   update() {
     if (this.disabled) return
     if (this.game.input.activePointer.isDown) {
+      console.log('down')
+      
       this.draw()
       this.#checkWin()
     }
+  
+    if (this.game.input.activePointer.isUp) {
+      if (this.getAlphaRatio() > this.minAlphaRatio) {
+        console.log('ВОССТАНОВЛЕНИЕ ТЕКСТУРЫ')
+        
+        this.bitmapData.copyRect(this.sprite,
+          this.setRectArea(0, 0),
+          this.currentPos.x,
+          this.currentPos.y,
+        )
+      }
+    }
+    
   }
   
   draw = () => {
@@ -55,40 +71,6 @@ export default class Scratch {
       this.bitmapData.blendReset()
       this.bitmapData.dirty = true
     // }
-  }
-  
-  #clearRect = () => {
-    this.bitmapData.context.clearRect(this.currentPos.x, this.currentPos.y, this.sprite.width, this.sprite.height)
-  }
-  
-  getAlphaRatio = () => {
-    const {ctx} = this.bitmapData
-    let alphaPixels = 0
-    
-    // const {data} = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height)
-    const {data} = ctx.getImageData(
-      this.currentPos.x, this.currentPos.y,
-      this.sprite.width, this.sprite.height
-    )
-
-    // чем выше число, тем быстрее происходит полная очистка
-    const coefficientBrush = 4
-    for (let i = 0; i < data.length; i += coefficientBrush) {
-      if (data[i] > 0) alphaPixels++
-    }
-    
-    return +(alphaPixels / (ctx.canvas.width * ctx.canvas.height)).toFixed(3)
-  }
-  
-  #checkWin = () => {
-    const alphaRatio = this.getAlphaRatio()
-    console.log(alphaRatio)
-    
-    if (alphaRatio < this.minAlphaRatio) {
-      console.warn('WIN')
-      this.disabled = true
-      this.#clearRect()
-    }
   }
   
   getDifference = (direction) => {
@@ -113,16 +95,19 @@ export default class Scratch {
     }
   }
   
+  setRectArea = (x, y) => {
+    return new Phaser.Rectangle(x, y, this.sprite.width, this.sprite.height)
+  }
+  
   setPosition = () => {
     const width = this.sprite.width
     const height = this.sprite.height
-    const setRectArea = (x, y) => new Phaser.Rectangle(x, y, width, height)
 
     if (window.matchMedia('(orientation: portrait)').matches) {
       if (JSON.stringify(this.spritePos.portrait) === JSON.stringify(this.prevPos)) return
   
       this.bitmapData.copyRect(this.bitmapData,
-        setRectArea(this.prevPos.x, this.prevPos.y),
+        this.setRectArea(this.prevPos.x, this.prevPos.y),
         this.spritePos.portrait.x,
         this.spritePos.portrait.y,
       )
@@ -144,7 +129,7 @@ export default class Scratch {
       if (JSON.stringify(this.spritePos.landscape) === JSON.stringify(this.prevPos)) return
       
       this.bitmapData.copyRect(this.bitmapData,
-        setRectArea(this.prevPos.x, this.prevPos.y),
+        this.setRectArea(this.prevPos.x, this.prevPos.y),
         this.spritePos.landscape.x,
         this.spritePos.landscape.y,
       )
@@ -162,6 +147,37 @@ export default class Scratch {
   
       this.prevPos = {x: this.spritePos.landscape.x, y: this.spritePos.landscape.y}
       this.currentPos = {x: this.prevPos.x, y: this.prevPos.y}
+    }
+  }
+  
+  #clearRect = () => {
+    this.bitmapData.context.clearRect(this.currentPos.x, this.currentPos.y, this.sprite.width, this.sprite.height)
+  }
+  
+  getAlphaRatio = () => {
+    const {ctx} = this.bitmapData
+    let alphaPixels = 0
+    
+    // const {data} = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height)
+    const {data} = ctx.getImageData(
+      this.currentPos.x, this.currentPos.y,
+      this.sprite.width, this.sprite.height
+    )
+    
+    // чем выше число, тем быстрее происходит полная очистка
+    const coefficientBrush = 4
+    for (let i = 0; i < data.length; i += coefficientBrush) {
+      if (data[i] > 0) alphaPixels++
+    }
+    
+    return +(alphaPixels / (ctx.canvas.width * ctx.canvas.height)).toFixed(3)
+  }
+  
+  #checkWin = () => {
+    if (this.getAlphaRatio() < this.minAlphaRatio) {
+      console.warn('WIN')
+      this.disabled = true
+      this.#clearRect()
     }
   }
 }

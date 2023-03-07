@@ -37,7 +37,7 @@ export default class Scratch {
     if (this.disabled) return
     if (this.game.input.activePointer.isDown) {
       this.draw()
-      this.#checkWin()
+      // this.#checkWin()
     }
   }
   
@@ -75,12 +75,10 @@ export default class Scratch {
   
   #checkWin = () => {
     const alphaRatio = this.getAlphaRatio()
-    
     if (alphaRatio < this.minAlphaRatio) {
       this.disabled = true
-      // this.#clearCoverWrap()
+      this.#clearCoverWrap()
       this.destroy()
-  
     }
   }
   
@@ -90,41 +88,44 @@ export default class Scratch {
 
     const setRectArea = (x, y) => new Phaser.Rectangle(x, y, width, height)
     console.warn('prevPos:', this.prevPos)
+    console.warn('landscape:', this.position.landscape)
     
     if (window.matchMedia('(orientation: portrait)').matches) {
       console.log('--- portrait --- ')
-  
+
       // если совпадает точка отсчёта, то копировать не нужно
-      if (this.prevPos.x === this.sprite.position.x || this.prevPos.y === this.sprite.position.y) return
-      
+      if (JSON.stringify(this.position.portrait) === JSON.stringify(this.prevPos)) return
+
       this.bitmapData.copyRect(this.bitmapData,
         setRectArea(this.prevPos.x, this.prevPos.y),
         this.position.portrait.x,
         this.position.portrait.y,
       )
-  
-      
+
       this.bitmapData.clear(this.prevPos.x, this.prevPos.y, width, height)
       this.prevPos = {
         x: this.position.portrait.x,
         y: this.position.portrait.y,
       }
     }
-    
+  
     if (window.matchMedia('(orientation: landscape)').matches) {
       console.log('--- landscape --- ')
+  
+      // если совпадает точка отсчёта, то копировать не нужно
+      if (JSON.stringify(this.position.landscape) === JSON.stringify(this.prevPos)) return
+      
       this.bitmapData.copyRect(this.bitmapData,
         setRectArea(this.prevPos.x, this.prevPos.y),
         this.position.landscape.x,
         this.position.landscape.y,
       )
-      // if (this.prevPos.x !== this.sprite.position.x || this.prevPos.y !== this.sprite.position.y) {
-        this.bitmapData.clear(this.prevPos.x, this.prevPos.y, width, height)
-        this.prevPos = {
-          x: this.position.landscape.x,
-          y: this.position.landscape.y,
-        }
-      // }
+      
+      this.bitmapData.clear(this.prevPos.x, this.prevPos.y, width, height)
+      this.prevPos = {
+        x: this.position.landscape.x,
+        y: this.position.landscape.y,
+      }
     }
   }
   

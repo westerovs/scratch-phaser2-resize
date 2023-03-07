@@ -13,32 +13,32 @@ class Game {
   
     this.POS1 = {
       landscape: {
-        x: 400,
-        y: 400,
+        x: 0,
+        y: 200,
       },
       portrait: {
-        x: 0,
-        y: 0,
+        x: 200,
+        y: 200,
       },
     }
     this.POS2 = {
       landscape: {
-        x: 600,
+        x: 0,
         y: 400,
       },
       portrait: {
-        x: 0,
-        y: 200,
+        x: 400,
+        y: 400,
       },
     }
     this.POS3 = {
       landscape: {
-        x: 600,
+        x: 0,
         y: 600,
       },
       portrait: {
-        x: 0,
-        y: 400,
+        x: 600,
+        y: 600,
       },
     }
   }
@@ -58,9 +58,9 @@ class Game {
   
   preload = () => {
     this.game.load.image('bg', './src/img/bg.jpg')
-    this.game.load.image('block0', './src/img/block0.png')
     this.game.load.image('block1', './src/img/block1.png')
     this.game.load.image('block2', './src/img/block2.png')
+    this.game.load.image('block3', './src/img/block3.png')
   }
   
   create = () => {
@@ -68,10 +68,11 @@ class Game {
     
     console.clear()
     this.game.add.image(0, 0, 'bg')
-    this.coverSprite1 = this.game.make.sprite(null, null, 'block1')
-    this.coverSprite2 = this.game.make.sprite(null, null, 'block2')
-    this.coverSprite3 = this.game.make.sprite(null, null, 'block1')
-    this.coverSprite4 = this.game.make.sprite(null, null, 'block2')
+    this.coverSprite0 = this.game.make.sprite(0, 0, 'block0')
+    this.coverSprite1 = this.game.make.sprite(0, 0, 'block1')
+    this.coverSprite2 = this.game.make.sprite(0, 0, 'block2')
+    this.coverSprite3 = this.game.make.sprite(0, 0, 'block1')
+    this.coverSprite4 = this.game.make.sprite(0, 0, 'block2')
   
     // this.group = this.game.make.group()
     // this.group.add(this.coverSprite2)
@@ -96,10 +97,10 @@ class Game {
       bitmapData: this.bitmapData,
       position: this.POS2
     })
-    
+
     this.scratch3 = new Scratch({
       game: this.game,
-      sprite: this.coverSprite1,
+      sprite: this.coverSprite3,
       minAlphaRatio: 0.015,
       bitmapData: this.bitmapData,
       position: this.POS3

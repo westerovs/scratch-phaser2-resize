@@ -84,17 +84,38 @@ export default class Scratch {
     }
   }
   
+  // console.warn('prevPos:', this.prevPos)
+  // console.warn('landscape:', this.position.landscape)
+  
+  getDifference = (direction) => {
+    const clearX = (this.prevPos.x + this.sprite.width)
+    const clearY = (this.prevPos.y + this.sprite.height)
+    const factX = this.position[direction].x
+    const factY = this.position[direction].y
+    const differentX = clearX - factX
+    const differentY = clearY - factY
+    
+    // console.log('clearX:', clearX, 'clearY:', clearY)
+    // console.log('factY:', factX, 'factY:', factX)
+    // console.log('differentX:', differentX, 'differentY:', differentY)
+    
+    return {
+      clearX,
+      clearY,
+      factX,
+      factY,
+      differentX,
+      differentY,
+    }
+  }
+  
   setPosition = () => {
     // console.clear()
     const width = this.sprite.width
     const height = this.sprite.height
     const setRectArea = (x, y) => new Phaser.Rectangle(x, y, width, height)
-    // console.warn('prevPos:', this.prevPos)
-    // console.warn('landscape:', this.position.landscape)
-    
-    
+
     if (window.matchMedia('(orientation: portrait)').matches) {
-      // если совпадает точка отсчёта, то копировать не нужно
       if (JSON.stringify(this.position.portrait) === JSON.stringify(this.prevPos)) return
   
       this.bitmapData.copyRect(this.bitmapData,
@@ -103,39 +124,23 @@ export default class Scratch {
         this.position.portrait.y,
       )
       
-      // differentX
-      const clearX = (this.prevPos.x + width)
-      const factX = this.position.portrait.x
-      const differentX = clearX - factX
-      // differentY
-      const clearY = (this.prevPos.y + height)
-      const factY = this.position.portrait.y
-      const differentY = clearY - factY
-      
-      console.log('clearX', clearX)
-      console.log('factX', factX)
-      console.log('differentX', differentX)
-      console.log('differentY', differentY)
+      // different
+      // const {clearX, clearY, factY, factX, differentX, differentY} = this.getDifference('portrait')
+      // if (clearX > factX) {
+      //   this.bitmapData.clear(this.prevPos.x - differentX, this.prevPos.y, width, height)
+      // }
+      // if (clearY > factY) {
+      //   this.bitmapData.clear(this.prevPos.x, this.prevPos.y - differentY, width, height)
+      // }
+      this.bitmapData.clear(this.prevPos.x, this.prevPos.y, width, height)
   
-      if (clearX > factX) {
-        this.bitmapData.clear(this.prevPos.x - differentX, this.prevPos.y, width, height)
-      }
-      if (clearY > factY) {
-        this.bitmapData.clear(this.prevPos.x, this.prevPos.y - differentY, width, height)
-      }
-      else { }
-      
-      
       this.prevPos = {
         x: this.position.portrait.x,
         y: this.position.portrait.y,
       }
-      // console.warn('NextPrevPos:', this.prevPos)
     }
     
-    
     if (window.matchMedia('(orientation: landscape)').matches) {
-      // если совпадает точка отсчёта, то копировать не нужно
       if (JSON.stringify(this.position.landscape) === JSON.stringify(this.prevPos)) return
       
       this.bitmapData.copyRect(this.bitmapData,
@@ -143,13 +148,23 @@ export default class Scratch {
         this.position.landscape.x,
         this.position.landscape.y,
       )
-      
+  
+      // different
+      const {clearX, clearY, factY, factX, differentX, differentY} = this.getDifference('landscape')
+
+      // if (clearX > factX) {
+      //   this.bitmapData.clear(this.prevPos.x - differentX, this.prevPos.y, width, height)
+      // }
+      // if (clearY > factY) {
+      //   this.bitmapData.clear(this.prevPos.x, this.prevPos.y - differentY, width, height)
+      // }
       this.bitmapData.clear(this.prevPos.x, this.prevPos.y, width, height)
+      
+      
       this.prevPos = {
         x: this.position.landscape.x,
         y: this.position.landscape.y,
       }
-      // console.warn('NextPrevPos:', this.prevPos)
     }
   }
   

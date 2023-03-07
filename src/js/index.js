@@ -11,14 +11,24 @@ class Game {
     
     this.group = null
   
+    // this.POS1 = {
+    //   landscape: {
+    //     x: 50,
+    //     y: 50,
+    //   },
+    //   portrait: {
+    //     x: 0,
+    //     y: 0,
+    //   },
+    // }
     this.POS1 = {
       landscape: {
-        x: 0,
-        y: 0,
+        x: 200,
+        y: 200,
       },
       portrait: {
-        x: 50,
-        y: 50,
+        x: 400,
+        y: 200,
       },
     }
     this.POS2 = {
@@ -87,20 +97,20 @@ class Game {
       bitmapData: this.bitmapData,
       position: this.POS1
     })
-    // this.scratch2 = new Scratch({
-    //   game: this.game,
-    //   sprite: this.coverSprite2,
-    //   minAlphaRatio: 0.015,
-    //   bitmapData: this.bitmapData,
-    //   position: this.POS2
-    // })
-    // this.scratch3 = new Scratch({
-    //   game: this.game,
-    //   sprite: this.coverSprite3,
-    //   minAlphaRatio: 0.015,
-    //   bitmapData: this.bitmapData,
-    //   position: this.POS3
-    // })
+    this.scratch2 = new Scratch({
+      game: this.game,
+      sprite: this.coverSprite2,
+      minAlphaRatio: 0.015,
+      bitmapData: this.bitmapData,
+      position: this.POS2
+    })
+    this.scratch3 = new Scratch({
+      game: this.game,
+      sprite: this.coverSprite3,
+      minAlphaRatio: 0.015,
+      bitmapData: this.bitmapData,
+      position: this.POS3
+    })
   
     this.setPosition()
     window.addEventListener('resize', () => this.setPosition())

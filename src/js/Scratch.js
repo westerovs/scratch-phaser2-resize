@@ -4,22 +4,24 @@ export default class Scratch {
     sprite,
     minAlphaRatio = 0.5,
     bitmapData,
+    position
   }) {
     this.game = game
     this.sprite = sprite
     this.bitmapData = bitmapData
-    // this.bitmapData          = null
-    this.game.factor    = 1
     
     this.minAlphaRatio = minAlphaRatio
     this.disabled = false
+    this.position = position
     
     this.init()
 }
   
   init() {
-    // this.bitmapData.draw(this.sprite)
-    // this.bitmapData.update()
+    this.bitmapData.draw(this.sprite)
+  
+    this.setPosition()
+    window.addEventListener('resize', () => this.setPosition())
   }
   
   destroy() {
@@ -29,8 +31,10 @@ export default class Scratch {
   
   update() {
     if (this.disabled) return
-    this.draw()
-    this.#checkWin()
+    if (this.game.input.activePointer.isDown) {
+      this.draw()
+      this.#checkWin()
+    }
   }
   
   draw = () => {
@@ -66,7 +70,6 @@ export default class Scratch {
   }
   
   #checkWin = () => {
-    return
     const alphaRatio = this.getAlphaRatio()
     
     if (alphaRatio < this.minAlphaRatio) {
@@ -76,4 +79,23 @@ export default class Scratch {
   
     }
   }
+  
+  setPosition = () => {
+    const width = this.sprite.width
+    const height = this.sprite.height
+
+    const rect = (x, y) => new Phaser.Rectangle(x, y, width, height)
+
+    if (window.matchMedia('(orientation: portrait)').matches) {
+      console.log('--- portrait --- ')
+      this.bitmapData.copyRect(this.bitmapData, rect(width, height), this.position.portrait.x, this.position.portrait.y)
+      this.bitmapData.clear(width, height, this.sprite.width, this.sprite.height)
+    }
+    if (window.matchMedia('(orientation: landscape)').matches) {
+      console.log('--- landscape --- ')
+      this.bitmapData.copyRect(this.bitmapData, rect(0, 0), this.position.landscape.x, this.position.landscape.y)
+      this.bitmapData.clear(0, 0, this.sprite.width, this.sprite.height)
+    }
+  }
+  
 }

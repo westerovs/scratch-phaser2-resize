@@ -4,7 +4,7 @@ export default class Scratch {
     sprite,
     minAlphaRatio = 0.5,
     bitmapData,
-    position
+    spritePos
   }) {
     this.game = game
     this.sprite = sprite
@@ -12,13 +12,18 @@ export default class Scratch {
     
     this.minAlphaRatio = minAlphaRatio
     this.disabled = false
-    this.position = position
+    this.spritePos = spritePos
   
     this.slepok = null
     
     this.prevPos = {
       x: this.sprite.x,
       y: this.sprite.y,
+    }
+  
+    this.currentPos = {
+      x: null,
+      y: null,
     }
     this.init()
 }
@@ -28,18 +33,14 @@ export default class Scratch {
   
     this.setPosition()
     window.addEventListener('resize', () => this.setPosition())
-  }
-  
-  destroy() {
-    this.sprite.alive = false
-    this.bitmapData.destroy()
+    console.log('MAX_PIXELS:', this.getAlphaRatio())
   }
   
   update() {
     if (this.disabled) return
     if (this.game.input.activePointer.isDown) {
       this.draw()
-      // this.#checkWin()
+      this.#checkWin()
     }
   }
   
@@ -56,16 +57,20 @@ export default class Scratch {
     // }
   }
   
-  #clearCoverWrap = () => {
-    this.bitmapData.context.clearRect(0, 0, this.sprite.width, this.sprite.height)
+  #clearRect = () => {
+    this.bitmapData.context.clearRect(this.currentPos.x, this.currentPos.y, this.sprite.width, this.sprite.height)
   }
   
   getAlphaRatio = () => {
     const {ctx} = this.bitmapData
     let alphaPixels = 0
     
-    const {data} = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height)
-    
+    // const {data} = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height)
+    const {data} = ctx.getImageData(
+      this.currentPos.x, this.currentPos.y,
+      this.sprite.width, this.sprite.height
+    )
+
     // чем выше число, тем быстрее происходит полная очистка
     const coefficientBrush = 4
     for (let i = 0; i < data.length; i += coefficientBrush) {
@@ -77,21 +82,20 @@ export default class Scratch {
   
   #checkWin = () => {
     const alphaRatio = this.getAlphaRatio()
+    console.log(alphaRatio)
+    
     if (alphaRatio < this.minAlphaRatio) {
+      console.warn('WIN')
       this.disabled = true
-      this.#clearCoverWrap()
-      this.destroy()
+      this.#clearRect()
     }
   }
-  
-  // console.warn('prevPos:', this.prevPos)
-  // console.warn('landscape:', this.position.landscape)
   
   getDifference = (direction) => {
     const clearX = (this.prevPos.x + this.sprite.width)
     const clearY = (this.prevPos.y + this.sprite.height)
-    const factX = this.position[direction].x
-    const factY = this.position[direction].y
+    const factX = this.spritePos[direction].x
+    const factY = this.spritePos[direction].y
     const differentX = clearX - factX
     const differentY = clearY - factY
     
@@ -110,20 +114,18 @@ export default class Scratch {
   }
   
   setPosition = () => {
-    // console.clear()
     const width = this.sprite.width
     const height = this.sprite.height
     const setRectArea = (x, y) => new Phaser.Rectangle(x, y, width, height)
 
     if (window.matchMedia('(orientation: portrait)').matches) {
-      if (JSON.stringify(this.position.portrait) === JSON.stringify(this.prevPos)) return
+      if (JSON.stringify(this.spritePos.portrait) === JSON.stringify(this.prevPos)) return
   
       this.bitmapData.copyRect(this.bitmapData,
         setRectArea(this.prevPos.x, this.prevPos.y),
-        this.position.portrait.x,
-        this.position.portrait.y,
+        this.spritePos.portrait.x,
+        this.spritePos.portrait.y,
       )
-      
       // different
       // const {clearX, clearY, factY, factX, differentX, differentY} = this.getDifference('portrait')
       // if (clearX > factX) {
@@ -134,21 +136,19 @@ export default class Scratch {
       // }
       this.bitmapData.clear(this.prevPos.x, this.prevPos.y, width, height)
   
-      this.prevPos = {
-        x: this.position.portrait.x,
-        y: this.position.portrait.y,
-      }
+      this.prevPos = {x: this.spritePos.portrait.x, y: this.spritePos.portrait.y}
+      this.currentPos = {x: this.prevPos.x, y: this.prevPos.y}
     }
     
     if (window.matchMedia('(orientation: landscape)').matches) {
-      if (JSON.stringify(this.position.landscape) === JSON.stringify(this.prevPos)) return
+      if (JSON.stringify(this.spritePos.landscape) === JSON.stringify(this.prevPos)) return
       
       this.bitmapData.copyRect(this.bitmapData,
         setRectArea(this.prevPos.x, this.prevPos.y),
-        this.position.landscape.x,
-        this.position.landscape.y,
+        this.spritePos.landscape.x,
+        this.spritePos.landscape.y,
       )
-  
+      
       // different
       const {clearX, clearY, factY, factX, differentX, differentY} = this.getDifference('landscape')
 
@@ -159,13 +159,9 @@ export default class Scratch {
       //   this.bitmapData.clear(this.prevPos.x, this.prevPos.y - differentY, width, height)
       // }
       this.bitmapData.clear(this.prevPos.x, this.prevPos.y, width, height)
-      
-      
-      this.prevPos = {
-        x: this.position.landscape.x,
-        y: this.position.landscape.y,
-      }
+  
+      this.prevPos = {x: this.spritePos.landscape.x, y: this.spritePos.landscape.y}
+      this.currentPos = {x: this.prevPos.x, y: this.prevPos.y}
     }
   }
-  
 }

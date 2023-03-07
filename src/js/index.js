@@ -14,11 +14,11 @@ class Game {
     this.POS1 = {
       landscape: {
         x: 0,
-        y: 200,
+        y: 0,
       },
       portrait: {
-        x: 200,
-        y: 200,
+        x: 50,
+        y: 50,
       },
     }
     this.POS2 = {
@@ -68,11 +68,9 @@ class Game {
     
     console.clear()
     this.game.add.image(0, 0, 'bg')
-    this.coverSprite0 = this.game.make.sprite(0, 0, 'block0')
     this.coverSprite1 = this.game.make.sprite(0, 0, 'block1')
     this.coverSprite2 = this.game.make.sprite(0, 0, 'block2')
-    this.coverSprite3 = this.game.make.sprite(0, 0, 'block1')
-    this.coverSprite4 = this.game.make.sprite(0, 0, 'block2')
+    this.coverSprite3 = this.game.make.sprite(0, 0, 'block3')
   
     // this.group = this.game.make.group()
     // this.group.add(this.coverSprite2)
@@ -89,29 +87,38 @@ class Game {
       bitmapData: this.bitmapData,
       position: this.POS1
     })
-    
-    this.scratch2 = new Scratch({
-      game: this.game,
-      sprite: this.coverSprite2,
-      minAlphaRatio: 0.015,
-      bitmapData: this.bitmapData,
-      position: this.POS2
-    })
-
-    this.scratch3 = new Scratch({
-      game: this.game,
-      sprite: this.coverSprite3,
-      minAlphaRatio: 0.015,
-      bitmapData: this.bitmapData,
-      position: this.POS3
-    })
+    // this.scratch2 = new Scratch({
+    //   game: this.game,
+    //   sprite: this.coverSprite2,
+    //   minAlphaRatio: 0.015,
+    //   bitmapData: this.bitmapData,
+    //   position: this.POS2
+    // })
+    // this.scratch3 = new Scratch({
+    //   game: this.game,
+    //   sprite: this.coverSprite3,
+    //   minAlphaRatio: 0.015,
+    //   bitmapData: this.bitmapData,
+    //   position: this.POS3
+    // })
+  
+    this.setPosition()
+    window.addEventListener('resize', () => this.setPosition())
   }
   
   update = () => {
     this.scratch1?.update()
     this.scratch2?.update()
     this.scratch3?.update()
-    this.scratch4?.update()
+  }
+  
+  setPosition = () => {
+    if (window.matchMedia('(orientation: portrait)').matches) {
+      console.log('--- portrait --- ')
+    }
+    if (window.matchMedia('(orientation: landscape)').matches) {
+      console.log('--- landscape --- ')
+    }
   }
 }
 

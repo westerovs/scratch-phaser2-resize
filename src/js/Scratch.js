@@ -14,6 +14,8 @@ export default class Scratch {
     this.disabled = false
     this.position = position
   
+    this.slepok = null
+    
     this.prevPos = {
       x: this.sprite.x,
       y: this.sprite.y,
@@ -83,35 +85,56 @@ export default class Scratch {
   }
   
   setPosition = () => {
+    // console.clear()
     const width = this.sprite.width
     const height = this.sprite.height
-
     const setRectArea = (x, y) => new Phaser.Rectangle(x, y, width, height)
-    console.warn('prevPos:', this.prevPos)
-    console.warn('landscape:', this.position.landscape)
+    // console.warn('prevPos:', this.prevPos)
+    // console.warn('landscape:', this.position.landscape)
+    
     
     if (window.matchMedia('(orientation: portrait)').matches) {
-      console.log('--- portrait --- ')
-
       // если совпадает точка отсчёта, то копировать не нужно
       if (JSON.stringify(this.position.portrait) === JSON.stringify(this.prevPos)) return
-
+  
       this.bitmapData.copyRect(this.bitmapData,
         setRectArea(this.prevPos.x, this.prevPos.y),
         this.position.portrait.x,
         this.position.portrait.y,
       )
-
-      this.bitmapData.clear(this.prevPos.x, this.prevPos.y, width, height)
+      
+      // differentX
+      const clearX = (this.prevPos.x + width)
+      const factX = this.position.portrait.x
+      const differentX = clearX - factX
+      // differentY
+      const clearY = (this.prevPos.y + height)
+      const factY = this.position.portrait.y
+      const differentY = clearY - factY
+      
+      console.log('clearX', clearX)
+      console.log('factX', factX)
+      console.log('differentX', differentX)
+      console.log('differentY', differentY)
+  
+      if (clearX > factX) {
+        this.bitmapData.clear(this.prevPos.x - differentX, this.prevPos.y, width, height)
+      }
+      if (clearY > factY) {
+        this.bitmapData.clear(this.prevPos.x, this.prevPos.y - differentY, width, height)
+      }
+      else { }
+      
+      
       this.prevPos = {
         x: this.position.portrait.x,
         y: this.position.portrait.y,
       }
+      // console.warn('NextPrevPos:', this.prevPos)
     }
-  
+    
+    
     if (window.matchMedia('(orientation: landscape)').matches) {
-      console.log('--- landscape --- ')
-  
       // если совпадает точка отсчёта, то копировать не нужно
       if (JSON.stringify(this.position.landscape) === JSON.stringify(this.prevPos)) return
       
@@ -126,6 +149,7 @@ export default class Scratch {
         x: this.position.landscape.x,
         y: this.position.landscape.y,
       }
+      // console.warn('NextPrevPos:', this.prevPos)
     }
   }
   

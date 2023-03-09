@@ -23,7 +23,7 @@ class Game {
     }
     this.POS2 = {
       landscape: {
-        x: 0,
+        x: 200,
         y: 400,
       },
       portrait: {
@@ -33,7 +33,7 @@ class Game {
     }
     this.POS3 = {
       landscape: {
-        x: 0,
+        x: 200,
         y: 600,
       },
       portrait: {
@@ -69,57 +69,53 @@ class Game {
     console.clear()
     this.game.add.image(0, 0, 'bg')
     this.coverSprite1 = this.game.make.sprite(0, 0, 'block1')
-    this.coverSprite2 = this.game.make.sprite(0, 0, 'block2')
-    this.coverSprite3 = this.game.make.sprite(0, 0, 'block3')
-  
-    // this.group = this.game.make.group()
-    // this.group.add(this.coverSprite2)
-    // this.bitmapData.drawGroup(this.group, this.coverSprite1)
-    
+    this.coverSprite2 = this.game.make.sprite(0, 0, 'block1')
+    this.coverSprite3 = this.game.make.sprite(0, 0, 'block1')
+
     // create bitmapData
     this.bitmapData = this.game.make.bitmapData(1366, 1366)
     this.bitmapData.addToWorld(0, 0)
 
-    this.scratch1 = new ScratchBlock({
+    this.scratchBlock1 = new ScratchBlock({
       game: this.game,
       sprite: this.coverSprite1,
       minAlphaRatio: 0.01,
       bitmapData: this.bitmapData,
       spritePos: this.POS1
     })
-    
-    // this.scratch2 = new ScratchBlock({
-    //   game: this.game,
-    //   sprite: this.coverSprite2,
-    //   minAlphaRatio: 0.01,
-    //   bitmapData: this.bitmapData,
-    //   spritePos: this.POS2
-    // })
-    
-    // this.scratch3 = new ScratchBlock({
-    //   game: this.game,
-    //   sprite: this.coverSprite3,
-    //   minAlphaRatio: 0.01,
-    //   bitmapData: this.bitmapData,
-    //   spritePos: this.POS3
-    // })
+
+    this.scratch2 = new ScratchBlock({
+      game: this.game,
+      sprite: this.coverSprite2,
+      minAlphaRatio: 0.01,
+      bitmapData: this.bitmapData,
+      spritePos: this.POS2
+    })
+
+    this.scratch3 = new ScratchBlock({
+      game: this.game,
+      sprite: this.coverSprite3,
+      minAlphaRatio: 0.01,
+      bitmapData: this.bitmapData,
+      spritePos: this.POS3
+    })
 
     this.setPosition()
     window.addEventListener('resize', () => this.setPosition())
   }
   
   update = () => {
-    this.scratch1?.update()
-    this.scratch2?.update()
-    this.scratch3?.update()
+    this.scratchBlock1?.update()
+    this.scratchBlock2?.update()
+    this.scratchBlock3?.update()
   }
   
   setPosition = () => {
     if (window.matchMedia('(orientation: portrait)').matches) {
-      console.log('--- portrait --- ')
+      // console.log('--- portrait --- ')
     }
     if (window.matchMedia('(orientation: landscape)').matches) {
-      console.log('--- landscape --- ')
+      // console.log('--- landscape --- ')
     }
   }
 }

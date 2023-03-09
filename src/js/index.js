@@ -17,8 +17,8 @@ class Game {
         y: 200,
       },
       portrait: {
-        x: 300,
-        y: 300,
+        x: 100,
+        y: 100,
       },
     }
     this.POS2 = {
@@ -58,6 +58,7 @@ class Game {
   
   preload = () => {
     this.game.load.image('bg', './src/img/bg.png')
+    this.game.load.image('bg2', './src/img/bg2.jpg')
     this.game.load.image('block1', './src/img/block1.png')
     this.game.load.image('block2', './src/img/block2.png')
     this.game.load.image('block3', './src/img/block3.png')
@@ -67,22 +68,56 @@ class Game {
     this.game.factor = 1
     
     console.clear()
-    this.game.add.image(0, 0, 'bg')
     this.coverSprite1 = this.game.make.sprite(0, 0, 'block1')
     this.coverSprite2 = this.game.make.sprite(0, 0, 'block2')
     this.coverSprite3 = this.game.make.sprite(0, 0, 'block3')
 
     // create bitmapData
-    this.bitmapData = this.game.make.bitmapData(1366, 1366)
+    this.bitmapData = this.game.make.bitmapData(600, 600)
     this.bitmapData.addToWorld(0, 0)
+    this.bitmapData.draw('bg2', 0, 0)
+  
+    // ------------------------------------------------------
+    const getImageURL = (imgData, width, height) => {
+      const newCanvas = document.createElement('canvas')
+      const ctx = newCanvas.getContext('2d')
+      newCanvas.width = width
+      newCanvas.height = height
+    
+      ctx.putImageData(imgData, 0, 0)
+      return newCanvas.toDataURL() //image URL
+    }
+  
+    const createCopyImage = (x, y, width, height) => {
+      const imageData = this.bitmapData.ctx.getImageData(x, y, this.bitmapData.width, this.bitmapData.width)
+    
+      const copyImage = new Image()
+      copyImage.src = getImageURL(imageData, width, height)
+    
+      return new Promise(resolve => {
+        copyImage.addEventListener('load', () => {
+          resolve(copyImage)
+        })
+      })
+    
+    }
+  
+    createCopyImage(0, 0, 200, 200)
+      .then((image) => {
+        this.bitmapData.draw(this.coverSprite1, 0, 0)
+        this.bitmapData.draw(image, 100, 100)
+      })
+    // ------------------------------------------------------
 
-    this.scratchBlock1 = new ScratchBlock({
-      game: this.game,
-      sprite: this.coverSprite1,
-      minAlphaRatio: 0.01,
-      bitmapData: this.bitmapData,
-      spritePos: this.POS1
-    })
+  
+    
+    // this.scratchBlock1 = new ScratchBlock({
+    //   game: this.game,
+    //   sprite: this.coverSprite1,
+    //   minAlphaRatio: 0.01,
+    //   bitmapData: this.bitmapData,
+    //   spritePos: this.POS1
+    // })
 
     // this.scratch2 = new ScratchBlock({
     //   game: this.game,

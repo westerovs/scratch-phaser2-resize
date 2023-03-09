@@ -1,4 +1,4 @@
-import Scratch from './Scratch.js'
+import Scratch from './modules/Scratch.js'
 
 class Game {
   constructor() {
@@ -79,7 +79,7 @@ class Game {
     // create bitmapData
     this.bitmapData = this.game.make.bitmapData(1366, 1366)
     this.bitmapData.addToWorld(0, 0)
-  
+
     this.scratch1 = new Scratch({
       game: this.game,
       sprite: this.coverSprite1,

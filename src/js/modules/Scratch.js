@@ -1,40 +1,44 @@
+import Ball from './Ball.js'
+import Collision from './Collision.js'
+
 export default class Scratch {
   constructor({
     game,
     sprite,
     minAlphaRatio = 0.5,
     bitmapData,
-    spritePos
+    spritePos,
   }) {
     this.game = game
     this.sprite = sprite
     this.bitmapData = bitmapData
-    
     this.minAlphaRatio = minAlphaRatio
     this.disabled = false
     this.spritePos = spritePos
-  
-    this.slepok = null
     
     this.prevPos = {
       x: this.sprite.x,
       y: this.sprite.y,
     }
-  
-    this.pressed = false
+    
     this.currentPos = {
       x: null,
       y: null,
     }
     this.init()
-}
+  }
   
   init() {
     this.bitmapData.draw(this.sprite)
-  
+    
     this.setPosition()
     window.addEventListener('resize', () => this.setPosition())
     console.log('MAX_PIXELS:', this.getAlphaRatio())
+  
+    // this.target = new Ball(this.bitmapData.context, 100, 100, 100, 'red')
+    // this.target.draw()
+    //
+    // new Collision(this.bitmapData.canvas, this.bitmapData.ctx, this.sprite).init()
   }
   
   update() {
@@ -45,31 +49,30 @@ export default class Scratch {
       this.draw()
       this.#checkWin()
     }
-  
-    if (this.game.input.activePointer.isUp) {
-      if (this.getAlphaRatio() > this.minAlphaRatio) {
-        console.log('ВОССТАНОВЛЕНИЕ ТЕКСТУРЫ')
-        
-        this.bitmapData.copyRect(this.sprite,
-          this.setRectArea(0, 0),
-          this.currentPos.x,
-          this.currentPos.y,
-        )
-      }
-    }
     
+    // if (this.game.input.activePointer.isUp) {
+    //   if (this.getAlphaRatio() > this.minAlphaRatio) {
+    //     console.log('ВОССТАНОВЛЕНИЕ ТЕКСТУРЫ')
+    //
+    //     this.bitmapData.copyRect(this.sprite,
+    //       this.setRectArea(0, 0),
+    //       this.currentPos.x,
+    //       this.currentPos.y,
+    //     )
+    //   }
+    // }
   }
   
   draw = () => {
     const cursorX = this.game.input.worldX / this.game.factor
     const cursorY = this.game.input.worldY / this.game.factor
     // const rgba  = this.bitmapData.getPixel(cursorX, cursorY)
-  
+    
     // if (rgba.a > 0) {
-      this.bitmapData.blendDestinationOut()
-      this.bitmapData.circle(cursorX, cursorY, 25, 'blue')
-      this.bitmapData.blendReset()
-      this.bitmapData.dirty = true
+    this.bitmapData.blendDestinationOut()
+    this.bitmapData.circle(cursorX, cursorY, 25, 'blue')
+    this.bitmapData.blendReset()
+    this.bitmapData.dirty = true
     // }
   }
   
@@ -102,10 +105,10 @@ export default class Scratch {
   setPosition = () => {
     const width = this.sprite.width
     const height = this.sprite.height
-
+    
     if (window.matchMedia('(orientation: portrait)').matches) {
       if (JSON.stringify(this.spritePos.portrait) === JSON.stringify(this.prevPos)) return
-  
+      
       this.bitmapData.copyRect(this.bitmapData,
         this.setRectArea(this.prevPos.x, this.prevPos.y),
         this.spritePos.portrait.x,
@@ -120,7 +123,7 @@ export default class Scratch {
       //   this.bitmapData.clear(this.prevPos.x, this.prevPos.y - differentY, width, height)
       // }
       this.bitmapData.clear(this.prevPos.x, this.prevPos.y, width, height)
-  
+      
       this.prevPos = {x: this.spritePos.portrait.x, y: this.spritePos.portrait.y}
       this.currentPos = {x: this.prevPos.x, y: this.prevPos.y}
     }
@@ -136,7 +139,7 @@ export default class Scratch {
       
       // different
       const {clearX, clearY, factY, factX, differentX, differentY} = this.getDifference('landscape')
-
+      
       // if (clearX > factX) {
       //   this.bitmapData.clear(this.prevPos.x - differentX, this.prevPos.y, width, height)
       // }
@@ -144,7 +147,7 @@ export default class Scratch {
       //   this.bitmapData.clear(this.prevPos.x, this.prevPos.y - differentY, width, height)
       // }
       this.bitmapData.clear(this.prevPos.x, this.prevPos.y, width, height)
-  
+      
       this.prevPos = {x: this.spritePos.landscape.x, y: this.spritePos.landscape.y}
       this.currentPos = {x: this.prevPos.x, y: this.prevPos.y}
     }
@@ -161,7 +164,7 @@ export default class Scratch {
     // const {data} = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height)
     const {data} = ctx.getImageData(
       this.currentPos.x, this.currentPos.y,
-      this.sprite.width, this.sprite.height
+      this.sprite.width, this.sprite.height,
     )
     
     // чем выше число, тем быстрее происходит полная очистка

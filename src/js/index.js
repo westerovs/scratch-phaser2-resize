@@ -17,28 +17,28 @@ class Game {
         y: 200,
       },
       portrait: {
-        x: 400,
-        y: 400,
+        x: 300,
+        y: 300,
       },
     }
     this.POS2 = {
       landscape: {
-        x: 200,
-        y: 400,
+        x: 600,
+        y: 200,
       },
       portrait: {
         x: 600,
-        y: 400,
+        y: 600,
       },
     }
     this.POS3 = {
       landscape: {
-        x: 200,
-        y: 600,
+        x: 800,
+        y: 200,
       },
       portrait: {
         x: 600,
-        y: 600,
+        y: 800,
       },
     }
   }
@@ -57,7 +57,7 @@ class Game {
   }
   
   preload = () => {
-    this.game.load.image('bg', './src/img/bg.jpg')
+    this.game.load.image('bg', './src/img/bg.png')
     this.game.load.image('block1', './src/img/block1.png')
     this.game.load.image('block2', './src/img/block2.png')
     this.game.load.image('block3', './src/img/block3.png')
@@ -69,8 +69,8 @@ class Game {
     console.clear()
     this.game.add.image(0, 0, 'bg')
     this.coverSprite1 = this.game.make.sprite(0, 0, 'block1')
-    this.coverSprite2 = this.game.make.sprite(0, 0, 'block1')
-    this.coverSprite3 = this.game.make.sprite(0, 0, 'block1')
+    this.coverSprite2 = this.game.make.sprite(0, 0, 'block2')
+    this.coverSprite3 = this.game.make.sprite(0, 0, 'block3')
 
     // create bitmapData
     this.bitmapData = this.game.make.bitmapData(1366, 1366)
@@ -84,21 +84,21 @@ class Game {
       spritePos: this.POS1
     })
 
-    this.scratch2 = new ScratchBlock({
-      game: this.game,
-      sprite: this.coverSprite2,
-      minAlphaRatio: 0.01,
-      bitmapData: this.bitmapData,
-      spritePos: this.POS2
-    })
-
-    this.scratch3 = new ScratchBlock({
-      game: this.game,
-      sprite: this.coverSprite3,
-      minAlphaRatio: 0.01,
-      bitmapData: this.bitmapData,
-      spritePos: this.POS3
-    })
+    // this.scratch2 = new ScratchBlock({
+    //   game: this.game,
+    //   sprite: this.coverSprite2,
+    //   minAlphaRatio: 0.01,
+    //   bitmapData: this.bitmapData,
+    //   spritePos: this.POS2
+    // })
+    //
+    // this.scratch3 = new ScratchBlock({
+    //   game: this.game,
+    //   sprite: this.coverSprite3,
+    //   minAlphaRatio: 0.01,
+    //   bitmapData: this.bitmapData,
+    //   spritePos: this.POS3
+    // })
 
     this.setPosition()
     window.addEventListener('resize', () => this.setPosition())
@@ -112,10 +112,10 @@ class Game {
   
   setPosition = () => {
     if (window.matchMedia('(orientation: portrait)').matches) {
-      // console.log('--- portrait --- ')
+      console.log('--- portrait --- ')
     }
     if (window.matchMedia('(orientation: landscape)').matches) {
-      // console.log('--- landscape --- ')
+      console.log('--- landscape --- ')
     }
   }
 }

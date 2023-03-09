@@ -1,4 +1,4 @@
-import Scratch from './modules/Scratch.js'
+import ScratchBlock from './modules/ScratchBlock.js'
 
 class Game {
   constructor() {
@@ -80,7 +80,7 @@ class Game {
     this.bitmapData = this.game.make.bitmapData(1366, 1366)
     this.bitmapData.addToWorld(0, 0)
 
-    this.scratch1 = new Scratch({
+    this.scratch1 = new ScratchBlock({
       game: this.game,
       sprite: this.coverSprite1,
       minAlphaRatio: 0.01,
@@ -88,7 +88,7 @@ class Game {
       spritePos: this.POS1
     })
     
-    // this.scratch2 = new Scratch({
+    // this.scratch2 = new ScratchBlock({
     //   game: this.game,
     //   sprite: this.coverSprite2,
     //   minAlphaRatio: 0.01,
@@ -96,7 +96,7 @@ class Game {
     //   spritePos: this.POS2
     // })
     
-    // this.scratch3 = new Scratch({
+    // this.scratch3 = new ScratchBlock({
     //   game: this.game,
     //   sprite: this.coverSprite3,
     //   minAlphaRatio: 0.01,

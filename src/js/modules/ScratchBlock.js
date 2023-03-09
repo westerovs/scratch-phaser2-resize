@@ -1,7 +1,4 @@
-import Ball from './Ball.js'
-import Collision from './Collision.js'
-
-export default class Scratch {
+export default class ScratchBlock {
   constructor({
     game,
     sprite,
@@ -29,16 +26,15 @@ export default class Scratch {
   }
   
   init() {
-    this.bitmapData.draw(this.sprite)
+    this.drawBlock()
     
-    this.setPosition()
-    window.addEventListener('resize', () => this.setPosition())
-    console.log('MAX_PIXELS:', this.getAlphaRatio())
+    this.#setPosition()
+    window.addEventListener('resize', () => this.#setPosition())
+    console.log('MAX_PIXELS:', this.#getAlphaRatio())
+  }
   
-    // this.target = new Ball(this.bitmapData.context, 100, 100, 100, 'red')
-    // this.target.draw()
-    //
-    // new Collision(this.bitmapData.canvas, this.bitmapData.ctx, this.sprite).init()
+  drawBlock = () => {
+    this.bitmapData.draw(this.sprite)
   }
   
   update() {
@@ -46,24 +42,24 @@ export default class Scratch {
     if (this.game.input.activePointer.isDown) {
       console.log('down')
       
-      this.draw()
+      this.#drawBlend()
       this.#checkWin()
     }
     
-    // if (this.game.input.activePointer.isUp) {
-    //   if (this.getAlphaRatio() > this.minAlphaRatio) {
-    //     console.log('ВОССТАНОВЛЕНИЕ ТЕКСТУРЫ')
-    //
-    //     this.bitmapData.copyRect(this.sprite,
-    //       this.setRectArea(0, 0),
-    //       this.currentPos.x,
-    //       this.currentPos.y,
-    //     )
-    //   }
-    // }
+    if (this.game.input.activePointer.isUp) {
+      if (this.#getAlphaRatio() > this.minAlphaRatio) {
+        console.log('ВОССТАНОВЛЕНИЕ ТЕКСТУРЫ')
+
+        this.bitmapData.copyRect(this.sprite,
+          this.#setRectArea(0, 0),
+          this.currentPos.x,
+          this.currentPos.y,
+        )
+      }
+    }
   }
   
-  draw = () => {
+  #drawBlend = () => {
     const cursorX = this.game.input.worldX / this.game.factor
     const cursorY = this.game.input.worldY / this.game.factor
     // const rgba  = this.bitmapData.getPixel(cursorX, cursorY)
@@ -76,7 +72,7 @@ export default class Scratch {
     // }
   }
   
-  getDifference = (direction) => {
+  #getDifference = (direction) => {
     const clearX = (this.prevPos.x + this.sprite.width)
     const clearY = (this.prevPos.y + this.sprite.height)
     const factX = this.spritePos[direction].x
@@ -98,11 +94,11 @@ export default class Scratch {
     }
   }
   
-  setRectArea = (x, y) => {
+  #setRectArea = (x, y) => {
     return new Phaser.Rectangle(x, y, this.sprite.width, this.sprite.height)
   }
   
-  setPosition = () => {
+  #setPosition = () => {
     const width = this.sprite.width
     const height = this.sprite.height
     
@@ -110,12 +106,12 @@ export default class Scratch {
       if (JSON.stringify(this.spritePos.portrait) === JSON.stringify(this.prevPos)) return
       
       this.bitmapData.copyRect(this.bitmapData,
-        this.setRectArea(this.prevPos.x, this.prevPos.y),
+        this.#setRectArea(this.prevPos.x, this.prevPos.y),
         this.spritePos.portrait.x,
         this.spritePos.portrait.y,
       )
       // different
-      // const {clearX, clearY, factY, factX, differentX, differentY} = this.getDifference('portrait')
+      // const {clearX, clearY, factY, factX, differentX, differentY} = this.#getDifference('portrait')
       // if (clearX > factX) {
       //   this.bitmapData.clear(this.prevPos.x - differentX, this.prevPos.y, width, height)
       // }
@@ -132,13 +128,13 @@ export default class Scratch {
       if (JSON.stringify(this.spritePos.landscape) === JSON.stringify(this.prevPos)) return
       
       this.bitmapData.copyRect(this.bitmapData,
-        this.setRectArea(this.prevPos.x, this.prevPos.y),
+        this.#setRectArea(this.prevPos.x, this.prevPos.y),
         this.spritePos.landscape.x,
         this.spritePos.landscape.y,
       )
       
       // different
-      const {clearX, clearY, factY, factX, differentX, differentY} = this.getDifference('landscape')
+      const {clearX, clearY, factY, factX, differentX, differentY} = this.#getDifference('landscape')
       
       // if (clearX > factX) {
       //   this.bitmapData.clear(this.prevPos.x - differentX, this.prevPos.y, width, height)
@@ -157,7 +153,7 @@ export default class Scratch {
     this.bitmapData.context.clearRect(this.currentPos.x, this.currentPos.y, this.sprite.width, this.sprite.height)
   }
   
-  getAlphaRatio = () => {
+  #getAlphaRatio = () => {
     const {ctx} = this.bitmapData
     let alphaPixels = 0
     
@@ -177,7 +173,7 @@ export default class Scratch {
   }
   
   #checkWin = () => {
-    if (this.getAlphaRatio() < this.minAlphaRatio) {
+    if (this.#getAlphaRatio() < this.minAlphaRatio) {
       console.warn('WIN')
       this.disabled = true
       this.#clearRect()

@@ -40,6 +40,9 @@ canvas {
   position: absolute;
   top: 100px;
   left: 100px;
+  outline: 4px solid red;
+  outline-offset: -4px;
+  z-index: 999;
 }
 
 #version {

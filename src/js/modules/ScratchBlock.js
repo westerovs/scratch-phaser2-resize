@@ -19,6 +19,8 @@ const createRect = (game, x = 0, y = 0, w, h, color = 0x00FFA9) => {
   // window.addEventListener('resize', () => this.resize())
 * */
 
+let COPY_IMAGE = null
+
 export default class ScratchBlock {
   constructor({
     game,
@@ -38,35 +40,37 @@ export default class ScratchBlock {
       x: this.sprite.x,
       y: this.sprite.y,
     }
-    
     this.currentPos = {
       x: null,
       y: null,
     }
+    
+    // this.copyCropImage = null
     this.init()
   }
   
   init() {
     this.drawBlock()
-    this.copyImage = this.createCopyImage(0, 0, 400, 500)
-    this.bitmapData.draw(this.copyImage)
-    
-    this.#resize()
     window.addEventListener('resize', () => this.#resize())
-
-    // this.#setPosition()
-    // window.addEventListener('resize', () => this.#setPosition())
-    // console.log('MAX_PIXELS:', this.#getAlphaRatio())
+    console.log('MAX_PIXELS:', this.#getAlphaRatio())
   }
   
   drawBlock = () => {
+    if (window.matchMedia('(orientation: portrait)').matches) {
+      this.sprite.position.set(this.spritePos.portrait.x, this.spritePos.portrait.y)
+    }
+  
+    if (window.matchMedia('(orientation: landscape)').matches) {
+      this.sprite.position.set(this.spritePos.landscape.x, this.spritePos.landscape.y)
+    }
+    
     this.bitmapData.draw(this.sprite)
   }
   
   update() {
     if (this.disabled) return
     if (this.game.input.activePointer.isDown) {
-  
+
       this.#drawBlend()
       // this.#checkWin()
     }
@@ -87,133 +91,43 @@ export default class ScratchBlock {
   #drawBlend = () => {
     const cursorX = this.game.input.worldX / this.game.factor
     const cursorY = this.game.input.worldY / this.game.factor
-    const rgba  = this.bitmapData.getPixel(cursorX, cursorY)
-    
-    // console.log(' ------------------ ')
-    // console.log(rgba)
-    // console.log(' ------------------ ')
+    // const rgba  = this.bitmapData.getPixel(cursorX, cursorY)
+
     // if (rgba.a > 0) {
     this.bitmapData.blendDestinationOut()
     this.bitmapData.circle(cursorX, cursorY, 25, 'blue')
-    // this.bitmapData.blendReset()
-    // this.bitmapData.dirty = true
+    this.bitmapData.blendReset()
+    this.bitmapData.dirty = true
     // }
   }
   
-  // #getDifference = (direction) => {
-  //   const clearX = (this.prevPos.x + this.sprite.width)
-  //   const clearY = (this.prevPos.y + this.sprite.height)
-  //   const factX = this.spritePos[direction].x
-  //   const factY = this.spritePos[direction].y
-  //   const differentX = clearX - factX
-  //   const differentY = clearY - factY
-  //
-  //   // console.log('clearX:', clearX, 'clearY:', clearY)
-  //   // console.log('factY:', factX, 'factY:', factX)
-  //   // console.log('differentX:', differentX, 'differentY:', differentY)
-  //
-  //   return {
-  //     clearX,
-  //     clearY,
-  //     factX,
-  //     factY,
-  //     differentX,
-  //     differentY,
-  //   }
-  // }
+  #getAlphaRatio = () => {
+    const {ctx} = this.bitmapData
+    let alphaPixels = 0
+
+    const {data} = ctx.getImageData(
+      this.sprite.x, this.sprite.y,
+      this.sprite.width, this.sprite.height,
+    )
+
+    // чем выше число, тем быстрее происходит полная очистка
+    const coefficientBrush = 4
+    for (let i = 0; i < data.length; i += coefficientBrush) {
+      if (data[i] > 0) alphaPixels++
+    }
+
+    return +(alphaPixels / (ctx.canvas.width * ctx.canvas.height)).toFixed(3)
+  }
   
-  // #setRectArea = (x, y) => {
-  //   return new Phaser.Rectangle(x, y, this.sprite.width, this.sprite.height)
-  // }
+  #checkWin = () => {
+    if (this.#getAlphaRatio() < this.minAlphaRatio) {
+      console.warn('WIN')
+      this.disabled = true
+      this.bitmapData.clear()
+      // this.#clearRect()
+    }
+  }
   
-  // ----------------------- ↓ RESIZE ↓ -----------------------
-  // #setPosition = () => {
-  //   const width = this.sprite.width
-  //   const height = this.sprite.height
-  //
-  //   if (window.matchMedia('(orientation: portrait)').matches) {
-  //     if (JSON.stringify(this.spritePos.portrait) === JSON.stringify(this.prevPos)) return
-  //
-  //     this.bitmapData.copyRect(this.bitmapData,
-  //       this.#setRectArea(this.prevPos.x, this.prevPos.y),
-  //       this.spritePos.portrait.x,
-  //       this.spritePos.portrait.y,
-  //     )
-  //     // different
-  //     // const {clearX, clearY, factY, factX, differentX, differentY} = this.#getDifference('portrait')
-  //     // if (clearX > factX) {
-  //     //   this.bitmapData.clear(this.prevPos.x - differentX, this.prevPos.y, width, height)
-  //     // }
-  //     // if (clearY > factY) {
-  //     //   this.bitmapData.clear(this.prevPos.x, this.prevPos.y - differentY, width, height)
-  //     // }
-  //
-  //     this.bitmapData.clear(this.prevPos.x, this.prevPos.y, width, height)
-  //
-  //     this.prevPos = {x: this.spritePos.portrait.x, y: this.spritePos.portrait.y}
-  //     this.currentPos = {x: this.prevPos.x, y: this.prevPos.y}
-  //   }
-  //
-  //   if (window.matchMedia('(orientation: landscape)').matches) {
-  //     if (JSON.stringify(this.spritePos.landscape) === JSON.stringify(this.prevPos)) return
-  //
-  //     this.bitmapData.copyRect(this.bitmapData,
-  //       this.#setRectArea(this.prevPos.x, this.prevPos.y),
-  //       this.spritePos.landscape.x,
-  //       this.spritePos.landscape.y,
-  //     )
-  //
-  //     // different
-  //     // const {clearX, clearY, factY, factX, differentX, differentY} = this.#getDifference('landscape')
-  //     // if (clearX > factX) {
-  //     //   this.bitmapData.clear(this.prevPos.x - differentX, this.prevPos.y, width, height)
-  //     // }
-  //     // if (clearY > factY) {
-  //     //   this.bitmapData.clear(this.prevPos.x, this.prevPos.y - differentY, width, height)
-  //     // }
-  //     this.bitmapData.clear(this.prevPos.x, this.prevPos.y, width, height)
-  //
-  //     this.prevPos = {x: this.spritePos.landscape.x, y: this.spritePos.landscape.y}
-  //     this.currentPos = {x: this.prevPos.x, y: this.prevPos.y}
-  //   }
-  // }
-  
-  // #clearRect = () => {
-  //   this.bitmapData.context.clearRect(this.currentPos.x, this.currentPos.y, this.sprite.width, this.sprite.height)
-  // }
-  // ----------------------- ↑ RESIZE ↑ -----------------------
-  
-  // #getAlphaRatio = () => {
-  //   const {ctx} = this.bitmapData
-  //   let alphaPixels = 0
-  //
-  //   // const {data} = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height)
-  //   const {data} = ctx.getImageData(
-  //     this.currentPos.x, this.currentPos.y,
-  //     this.sprite.width, this.sprite.height,
-  //   )
-  //
-  //   // чем выше число, тем быстрее происходит полная очистка
-  //   const coefficientBrush = 4
-  //   for (let i = 0; i < data.length; i += coefficientBrush) {
-  //     if (data[i] > 0) alphaPixels++
-  //   }
-  //
-  //   return +(alphaPixels / (ctx.canvas.width * ctx.canvas.height)).toFixed(3)
-  // }
-  
-  // #checkWin = () => {
-  //   if (this.#getAlphaRatio() < this.minAlphaRatio) {
-  //     console.warn('WIN')
-  //     this.disabled = true
-  //     this.#clearRect()
-  //   }
-  // }
-  //
-  
-  // -------------------------------------------
-  // -------------------------------------------
-  // -------------------------------------------
   getImageURL = (imgData, width, height) => {
     const newCanvas = document.createElement('canvas')
     const ctx = newCanvas.getContext('2d')
@@ -229,25 +143,29 @@ export default class ScratchBlock {
     
     const copyImage = new Image()
     copyImage.src = this.getImageURL(imageData, width, height)
-    return copyImage
+    
+    return new Promise(resolve => {
+      copyImage.addEventListener('load', () => {
+        resolve(copyImage)
+      })
+    })
   }
   
   #resize = () => {
+    this.createCopyImage(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
+      .then((copyCropImage) => {
+        this.bitmapData.context.clearRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
 
-
-    // this.bitmapData.context.clearRect(500, 500, 200, 200)
-    
-    if (window.matchMedia('(orientation: portrait)').matches) {
-      console.log('--- portrait --- ')
-      // this.sprite.position.set(this.spritePos.portrait.x, this.spritePos.portrait.y)
-    }
-    
-    if (window.matchMedia('(orientation: landscape)').matches) {
-      console.log('--- landscape --- ')
-      // this.sprite.position.set(this.spritePos.landscape.x, this.spritePos.landscape.y)
-    }
-  
-    
-    // this.drawBlock()
+        if (window.matchMedia('(orientation: portrait)').matches) {
+          console.log('--- portrait --- ')
+          this.sprite.position.set(this.spritePos.portrait.x, this.spritePos.portrait.y)
+        }
+        if (window.matchMedia('(orientation: landscape)').matches) {
+          console.log('--- landscape --- ')
+          this.sprite.position.set(this.spritePos.landscape.x, this.spritePos.landscape.y)
+        }
+        
+        this.bitmapData.draw(copyCropImage, this.sprite.x, this.sprite.y)
+      })
   }
 }

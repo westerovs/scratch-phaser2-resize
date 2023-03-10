@@ -17,18 +17,18 @@ class Game {
         y: 200,
       },
       portrait: {
-        x: 600,
-        y: 100,
+        x: 300,
+        y: 300,
       },
     }
     this.POS2 = {
       landscape: {
-        x: 600,
-        y: 200,
+        x: 200,
+        y: 400,
       },
       portrait: {
-        x: 600,
-        y: 600,
+        x: 400,
+        y: 400,
       },
     }
     this.POS3 = {
@@ -74,33 +74,30 @@ class Game {
     this.coverSprite3 = this.game.make.sprite(0, 0, 'block3')
 
     // create bitmapData
-    this.bitmapData = this.game.make.bitmapData(1000, 1000)
-    this.bitmapData.addToWorld(0, 0)
+    // this.bitmapData = this.game.make.bitmapData(1000, 1000)
+    // this.bitmapData.addToWorld(0, 0)
     // this.bitmapData.fill(0, 0, 0, 0.5)
 
     this.scratchBlock1 = new ScratchBlock({
       game: this.game,
       sprite: this.coverSprite1,
       minAlphaRatio: 0.01,
-      bitmapData: this.bitmapData,
       spritePos: this.POS1
     })
 
-    // this.scratch2 = new ScratchBlock({
-    //   game: this.game,
-    //   sprite: this.coverSprite2,
-    //   minAlphaRatio: 0.01,
-    //   bitmapData: this.bitmapData,
-    //   spritePos: this.POS2
-    // })
+    this.scratchBlock2 = new ScratchBlock({
+      game: this.game,
+      sprite: this.coverSprite2,
+      minAlphaRatio: 0.01,
+      spritePos: this.POS2
+    })
 
-    // this.scratch3 = new ScratchBlock({
-    //   game: this.game,
-    //   sprite: this.coverSprite3,
-    //   minAlphaRatio: 0.01,
-    //   bitmapData: this.bitmapData,
-    //   spritePos: this.POS3
-    // })
+    this.scratchBlock3 = new ScratchBlock({
+      game: this.game,
+      sprite: this.coverSprite3,
+      minAlphaRatio: 0.01,
+      spritePos: this.POS3
+    })
 
     this.setPosition()
     window.addEventListener('resize', () => this.setPosition())

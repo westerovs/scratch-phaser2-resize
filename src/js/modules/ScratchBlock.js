@@ -20,6 +20,7 @@ export default class ScratchBlock {
   init() {
     this.bitmapData = this.game.make.bitmapData(1000, 1000)
     this.bitmapData.addToWorld(0, 0)
+    // this.bitmapData.fill(0, 0, 0, 0.2)
     
     this.#createBlock()
     window.addEventListener('resize', () => this.#resize())
@@ -40,7 +41,7 @@ export default class ScratchBlock {
     this.sprite.alpha = 0
     this.sprite.inputEnabled = true
     this.sprite.events.onInputOver.add(() => {
-      this.game.scratchSignal.dispatch(this.sprite.key)
+      this.game.scratchSignal.dispatch(this.sprite.key, this)
     })
   }
   
@@ -60,6 +61,11 @@ export default class ScratchBlock {
         this.bitmapData.draw(this.sprite, this.sprite.x, this.sprite.y)
       }
     }
+  }
+  
+  recoveryBlock = () => {
+    this.sprite.alpha = 1
+    this.bitmapData.draw(this.sprite, this.sprite.x, this.sprite.y)
   }
   
   #drawBlend = () => {
@@ -96,10 +102,14 @@ export default class ScratchBlock {
   #checkWin = () => {
     if (this.#getAlphaRatio() < this.minAlphaRatio) {
       console.warn('WIN')
-      this.disabled = true
-      this.sprite.inputEnabled = false
-      this.bitmapData.context.clearRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
+      this.destroy()
     }
+  }
+  
+  destroy = () => {
+    this.disabled = true
+    this.sprite.inputEnabled = false
+    this.bitmapData.context.clearRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
   }
   
   getImageURL = (imgData, width, height) => {

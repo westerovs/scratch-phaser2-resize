@@ -4,43 +4,45 @@ class Game {
   constructor() {
     this.game = null
     
-    this.scratch1 = null
-    this.scratch2 = null
-    this.scratch3 = null
-    this.scratch4 = null
-    
-    this.group = null
+    this.scratchBlock1 = null
+    this.scratchBlock2 = null
+    this.scratchBlock3 = null
   
-    this.POS1 = {
-      landscape: {
-        x: 200,
-        y: 200,
+    this.Positions = {
+      pos1: {
+        landscape: {
+          x: 200,
+          y: 200,
+        },
+        portrait: {
+          x: 300,
+          y: 300,
+        },
       },
-      portrait: {
-        x: 300,
-        y: 300,
+      pos2: {
+        landscape: {
+          x: 200,
+          y: 400,
+        },
+        portrait: {
+          x: 400,
+          y: 400,
+        },
+      },
+      pos3: {
+        landscape: {
+          x: 800,
+          y: 200,
+        },
+        portrait: {
+          x: 600,
+          y: 800,
+        },
       },
     }
-    this.POS2 = {
-      landscape: {
-        x: 200,
-        y: 400,
-      },
-      portrait: {
-        x: 400,
-        y: 400,
-      },
-    }
-    this.POS3 = {
-      landscape: {
-        x: 800,
-        y: 200,
-      },
-      portrait: {
-        x: 600,
-        y: 800,
-      },
-    }
+    
+    this.prevScratchName = null
+    this.currentScratchName = null
   }
   
   init() {
@@ -69,35 +71,29 @@ class Game {
     this.game.add.image(0, 0, 'bg')
     
     this.initSignals()
-    console.clear()
     this.coverSprite1 = this.game.add.sprite(0, 0, 'block1')
     this.coverSprite2 = this.game.add.sprite(0, 0, 'block2')
     this.coverSprite3 = this.game.add.sprite(0, 0, 'block3')
-
-    // create bitmapData
-    // this.bitmapData = this.game.make.bitmapData(1000, 1000)
-    // this.bitmapData.addToWorld(0, 0)
-    // this.bitmapData.fill(0, 0, 0, 0.5)
 
     this.scratchBlock1 = new ScratchBlock({
       game: this.game,
       sprite: this.coverSprite1,
       minAlphaRatio: 0.01,
-      spritePos: this.POS1
+      spritePos: this.Positions.pos1
     })
 
     this.scratchBlock2 = new ScratchBlock({
       game: this.game,
       sprite: this.coverSprite2,
       minAlphaRatio: 0.01,
-      spritePos: this.POS2
+      spritePos: this.Positions.pos2
     })
 
     this.scratchBlock3 = new ScratchBlock({
       game: this.game,
       sprite: this.coverSprite3,
       minAlphaRatio: 0.01,
-      spritePos: this.POS3
+      spritePos: this.Positions.pos3
     })
 
     this.setPosition()
@@ -112,7 +108,19 @@ class Game {
   
   initSignals = () => {
     this.game.scratchSignal = new Phaser.Signal()
-    this.game.scratchSignal.add(name => console.log(name))
+    this.game.scratchSignal.add((name, scratch) => {
+      
+      this.prevScratchName = this.currentScratchName
+      this.currentScratchName = {
+        name,
+        scratch,
+      }
+  
+      // todo incorrect operation !
+      // if (this.prevScratchName === null) return
+      // console.log('prev: ', this.prevScratchName, '/ current: ', this.currentScratchName)
+      // this.prevScratchName.scratch.recoveryBlock()
+    })
   }
   
   setPosition = () => {

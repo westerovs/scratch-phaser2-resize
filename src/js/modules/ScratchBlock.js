@@ -21,12 +21,12 @@ export default class ScratchBlock {
     this.bitmapData = this.game.make.bitmapData(1000, 1000)
     this.bitmapData.addToWorld(0, 0)
     
-    this.drawBlock()
+    this.#createBlock()
     window.addEventListener('resize', () => this.#resize())
     console.log('MAX_PIXELS:', this.#getAlphaRatio())
   }
   
-  drawBlock = () => {
+  #createBlock = () => {
     if (window.matchMedia('(orientation: portrait)').matches) {
       this.sprite.position.set(this.spritePos.portrait.x, this.spritePos.portrait.y)
     }
@@ -36,17 +36,27 @@ export default class ScratchBlock {
     }
     
     this.bitmapData.draw(this.sprite)
+  
+    this.sprite.alpha = 0
+    this.sprite.inputEnabled = true
+    this.sprite.events.onInputOver.add(() => {
+      this.game.scratchSignal.dispatch(this.sprite.key)
+    })
   }
   
   update() {
     if (this.disabled) return
     if (this.game.input.activePointer.isDown) {
+      this.sprite.alpha = 0
+      
       this.#drawBlend()
       this.#checkWin()
     }
     
     if (this.game.input.activePointer.isUp) {
       if (this.#getAlphaRatio() > this.minAlphaRatio) {
+        this.sprite.alpha = 1
+        
         this.bitmapData.draw(this.sprite, this.sprite.x, this.sprite.y)
       }
     }
@@ -87,6 +97,7 @@ export default class ScratchBlock {
     if (this.#getAlphaRatio() < this.minAlphaRatio) {
       console.warn('WIN')
       this.disabled = true
+      this.sprite.inputEnabled = false
       this.bitmapData.context.clearRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
     }
   }

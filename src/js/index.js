@@ -68,10 +68,11 @@ class Game {
     this.game.factor = 1
     this.game.add.image(0, 0, 'bg')
     
+    this.initSignals()
     console.clear()
-    this.coverSprite1 = this.game.make.sprite(0, 0, 'block1')
-    this.coverSprite2 = this.game.make.sprite(0, 0, 'block2')
-    this.coverSprite3 = this.game.make.sprite(0, 0, 'block3')
+    this.coverSprite1 = this.game.add.sprite(0, 0, 'block1')
+    this.coverSprite2 = this.game.add.sprite(0, 0, 'block2')
+    this.coverSprite3 = this.game.add.sprite(0, 0, 'block3')
 
     // create bitmapData
     // this.bitmapData = this.game.make.bitmapData(1000, 1000)
@@ -107,6 +108,11 @@ class Game {
     this.scratchBlock1?.update()
     this.scratchBlock2?.update()
     this.scratchBlock3?.update()
+  }
+  
+  initSignals = () => {
+    this.game.scratchSignal = new Phaser.Signal()
+    this.game.scratchSignal.add(name => console.log(name))
   }
   
   setPosition = () => {

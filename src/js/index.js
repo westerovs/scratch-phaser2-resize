@@ -60,7 +60,7 @@ class Game {
   
   preload = () => {
     this.game.load.image('bg', './src/img/bg.png')
-    this.game.load.image('bg2', './src/img/bg2.jpg')
+    this.game.load.image('brush', './src/img/brush.png')
     this.game.load.image('block1', './src/img/block1.png')
     this.game.load.image('block2', './src/img/block2.png')
     this.game.load.image('block3', './src/img/block3.png')

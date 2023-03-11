@@ -1,15 +1,16 @@
 export default class ScratchBlock {
   constructor({
     game,
-    sprite,
+    key,
     minAlphaRatio = 0.5,
-    // bitmapData,
     spritePos,
   }) {
     this.game = game
-    this.sprite = sprite
+    this.key = key
     this.minAlphaRatio = minAlphaRatio
     this.disabled = false
+  
+    this.sprite = this.game.make.image(0, 0, key)
     this.spritePos = spritePos
     
     this.bitmapData = null
@@ -76,6 +77,7 @@ export default class ScratchBlock {
     // if (rgba.a > 0) {
     this.bitmapData.blendDestinationOut()
     this.bitmapData.circle(cursorX, cursorY, 25, 'blue')
+    // this.bitmapData.draw('brush', this.superX - 80, this.superY - 50)
     this.bitmapData.blendReset()
     this.bitmapData.dirty = true
     // }

@@ -70,34 +70,24 @@ class Game {
     this.game.factor = 1
     this.game.add.image(0, 0, 'bg')
     
-    this.initSignals()
-    this.coverSprite1 = this.game.add.sprite(0, 0, 'block1')
-    this.coverSprite2 = this.game.add.sprite(0, 0, 'block2')
-    this.coverSprite3 = this.game.add.sprite(0, 0, 'block3')
-
     this.scratchBlock1 = new ScratchBlock({
       game: this.game,
-      sprite: this.coverSprite1,
+      key: 'block1',
       minAlphaRatio: 0.01,
       spritePos: this.Positions.pos1
     })
-
     this.scratchBlock2 = new ScratchBlock({
       game: this.game,
-      sprite: this.coverSprite2,
+      key: 'block2',
       minAlphaRatio: 0.01,
       spritePos: this.Positions.pos2
     })
-
     this.scratchBlock3 = new ScratchBlock({
       game: this.game,
-      sprite: this.coverSprite3,
+      key: 'block3',
       minAlphaRatio: 0.01,
       spritePos: this.Positions.pos3
     })
-
-    this.setPosition()
-    window.addEventListener('resize', () => this.setPosition())
   }
   
   update = () => {
@@ -106,6 +96,7 @@ class Game {
     this.scratchBlock3?.update()
   }
   
+  // todo incorrect operation !
   initSignals = () => {
     this.game.scratchSignal = new Phaser.Signal()
     this.game.scratchSignal.add((name, scratch) => {
@@ -116,20 +107,10 @@ class Game {
         scratch,
       }
   
-      // todo incorrect operation !
       // if (this.prevScratchName === null) return
       // console.log('prev: ', this.prevScratchName, '/ current: ', this.currentScratchName)
       // this.prevScratchName.scratch.recoveryBlock()
     })
-  }
-  
-  setPosition = () => {
-    if (window.matchMedia('(orientation: portrait)').matches) {
-      console.log('=== portrait')
-    }
-    if (window.matchMedia('(orientation: landscape)').matches) {
-      console.log('=== landscape')
-    }
   }
 }
 

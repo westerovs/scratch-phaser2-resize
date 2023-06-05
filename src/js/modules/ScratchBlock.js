@@ -21,11 +21,10 @@ export default class ScratchBlock {
   init() {
     this.bitmapData = this.game.make.bitmapData(1000, 1000)
     this.bitmapData.addToWorld(0, 0)
-    // this.bitmapData.fill(0, 0, 0, 0.2)
 
     this.#createBlock()
     window.addEventListener('resize', () => this.#resize())
-    console.log('MAX_PIXELS:', this.#getAlphaRatio())
+    console.log(this.key, 'MAX_PIXELS:', this.#getAlphaRatio())
   }
 
   #createBlock = () => {
@@ -41,6 +40,7 @@ export default class ScratchBlock {
 
     this.sprite.alpha = 0
     this.sprite.inputEnabled = true
+    this.game.world.add(this.sprite)
     this.sprite.events.onInputOver.add(() => {
       this.game.scratchSignal.dispatch(this.sprite.key, this)
     })
@@ -48,14 +48,19 @@ export default class ScratchBlock {
 
   update() {
     if (this.disabled) return
+
+    this.#pointerdown()
+    this.#pointerUp()
+  }
+
+  #pointerdown = () => {
     if (this.game.input.activePointer.isDown) {
       this.sprite.alpha = 0
 
       this.#drawBlend()
       this.#checkWin()
+      console.log('MAX_PIXELS:', this.#getAlphaRatio())
     }
-
-    this.#pointerUp()
   }
 
   #pointerUp = () => {

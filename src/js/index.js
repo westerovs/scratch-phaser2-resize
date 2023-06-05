@@ -3,11 +3,11 @@ import ScratchBlock from './modules/ScratchBlock.js'
 class Game {
   constructor() {
     this.game = null
-    
+
     this.scratchBlock1 = null
     this.scratchBlock2 = null
     this.scratchBlock3 = null
-  
+
     this.Positions = {
       pos1: {
         landscape: {
@@ -40,11 +40,11 @@ class Game {
         },
       },
     }
-    
-    this.prevScratchName = null
-    this.currentScratchName = null
+
+    this.currentScratchData = null
+    this.prevScratchData = null
   }
-  
+
   init() {
     this.game = new Phaser.Game(
       1366,
@@ -57,7 +57,7 @@ class Game {
         update: this.update,
       })
   }
-  
+
   preload = () => {
     this.game.load.image('bg', './src/img/bg.png')
     this.game.load.image('brush', './src/img/brush.png')
@@ -65,11 +65,12 @@ class Game {
     this.game.load.image('block2', './src/img/block2.png')
     this.game.load.image('block3', './src/img/block3.png')
   }
-  
+
   create = () => {
     this.game.factor = 1
     this.game.add.image(0, 0, 'bg')
-    
+
+    this.#initSignals()
     this.scratchBlock1 = new ScratchBlock({
       game: this.game,
       key: 'block1',
@@ -89,28 +90,31 @@ class Game {
       spritePos: this.Positions.pos3
     })
   }
-  
+
   update = () => {
     this.scratchBlock1?.update()
     this.scratchBlock2?.update()
     this.scratchBlock3?.update()
   }
-  
-  // todo incorrect operation !
-  initSignals = () => {
+
+  #initSignals = () => {
+    // init
     this.game.scratchSignal = new Phaser.Signal()
-    this.game.scratchSignal.add((name, scratch) => {
-      
-      this.prevScratchName = this.currentScratchName
-      this.currentScratchName = {
-        name,
-        scratch,
-      }
-  
-      // if (this.prevScratchName === null) return
-      // console.log('prev: ', this.prevScratchName, '/ current: ', this.currentScratchName)
-      // this.prevScratchName.scratch.recoveryBlock()
-    })
+    // add
+    this.game.scratchSignal.add(this.#prevElementAction)
+  }
+
+  #prevElementAction = (name, scratch) => {
+    const data = {name, scratch,}
+
+    // если требуется восстановление предыдущего, если он не удален,
+    // а стирать начали новый
+    if (this.prevScratchData) {
+      this.prevScratchData.scratch.recoveryBlock()
+    }
+
+    this.currentScratchData = data
+    this.prevScratchData = this.currentScratchData
   }
 }
 

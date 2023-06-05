@@ -110,7 +110,7 @@ class Game {
     // если требуется восстановление предыдущего, если он не удален,
     // а стирать начали новый
     if (this.prevScratchData) {
-      this.prevScratchData.scratch.recoveryBlock()
+      // this.prevScratchData.scratch.recoveryBlock()
     }
 
     this.currentScratchData = data

@@ -12,7 +12,6 @@ export default class ScratchBlock {
 
     this.sprite = this.game.make.image(0, 0, key)
     this.spritePos = spritePos
-
     this.bitmapData = null
 
     this.init()
@@ -31,7 +30,6 @@ export default class ScratchBlock {
     if (window.matchMedia('(orientation: portrait)').matches) {
       this.sprite.position.set(this.spritePos.portrait.x, this.spritePos.portrait.y)
     }
-
     if (window.matchMedia('(orientation: landscape)').matches) {
       this.sprite.position.set(this.spritePos.landscape.x, this.spritePos.landscape.y)
     }
@@ -59,7 +57,7 @@ export default class ScratchBlock {
 
       this.#drawBlend()
       this.#checkWin()
-      console.log('MAX_PIXELS:', this.#getAlphaRatio())
+      console.log('value alpha:', this.#getAlphaRatio())
     }
   }
 
@@ -93,22 +91,19 @@ export default class ScratchBlock {
     // }
   }
 
+  // todo привести к виду от 100% до 0%
   #getAlphaRatio = () => {
     const {ctx} = this.bitmapData
     let alphaPixels = 0
 
-    const {data} = ctx.getImageData(
-      this.sprite.x, this.sprite.y,
-      this.sprite.width, this.sprite.height,
-    )
+    const {data} = ctx.getImageData(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
 
-    // чем выше число, тем быстрее происходит полная очистка
-    const coefficientBrush = 4
+    const coefficientBrush = 4 // чем выше число, тем быстрее происходит полная очистка
     for (let i = 0; i < data.length; i += coefficientBrush) {
       if (data[i] > 0) alphaPixels++
     }
 
-    return +(alphaPixels / (ctx.canvas.width * ctx.canvas.height)).toFixed(3)
+    return +(alphaPixels / (ctx.canvas.width * ctx.canvas.height)).toFixed(5)
   }
 
   #checkWin = () => {

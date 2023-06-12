@@ -64,15 +64,13 @@ export default class ScratchBlock {
   #pointerUp = () => {
     // если нужно восстанавливать целостность изображение, если оно стёрто меньше чем на minAlphaRatio
     if (this.game.input.activePointer.isUp) {
-      // if (this.#getAlphaRatio() > this.minAlphaRatio) {
-      //   this.sprite.alpha = 1
-      //
-      //   this.bitmapData.draw(this.sprite, this.sprite.x, this.sprite.y)
-      // }
+      if (this.#getAlphaRatio() > this.minAlphaRatio) {
+        this.recovery()
+      }
     }
   }
 
-  recoveryBlock = () => {
+  recovery = () => {
     this.sprite.alpha = 1
     this.bitmapData.draw(this.sprite, this.sprite.x, this.sprite.y)
   }

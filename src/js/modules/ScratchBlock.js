@@ -3,7 +3,7 @@ export default class ScratchBlock {
     game,
     atlas,
     key,
-    minRemainingPercent = null,
+    minRemainingPercent = 0,
     spritePos,
     callBack,
   }) {
@@ -29,9 +29,9 @@ export default class ScratchBlock {
     this.#initializeSprite()
     this.#initSignals()
 
-    this.valuePercentToWin = +(this.#getAlphaRatio() * (this.minRemainingPercent / 100)).toFixed(3)
-    // log
-    console.log(this.key, 'MAX_PIXELS:', this.#getAlphaRatio(), '/ min percent % ', this.valuePercentToWin)
+    // Пример: getAlphaRatio стула = 48.5, делим это на 100(%) и умножаем на нужное мин. число
+    this.valuePercentToWin = (this.#getAlphaRatio() / 100) * this.minRemainingPercent
+    this.#showLog()
   }
 
   update() {
@@ -43,7 +43,6 @@ export default class ScratchBlock {
   recovery = () => {
     this.sprite.alpha = 1
     this.bitmapData.draw(this.sprite, this.sprite.x, this.sprite.y)
-    console.log('recovery')
   }
 
   destroy = () => {
@@ -76,7 +75,6 @@ export default class ScratchBlock {
 
         this.#drawBlend()
         this.#checkWin()
-        console.log(this.key, 'Осталось процентов: ', this.#getAlphaRatio())
       }
     }
   }
@@ -175,5 +173,13 @@ export default class ScratchBlock {
     if (window.matchMedia('(orientation: landscape)').matches) {
       this.sprite.position.set(this.spritePos.landscape.x, this.spritePos.landscape.y)
     }
+  }
+
+  #showLog = () => {
+    console.log(`----------- ${this.key} ----------- `)
+    console.log('getAlphaRatio:', this.#getAlphaRatio())
+    console.log('valuePercentToWin: ', this.valuePercentToWin)
+    console.log('minRemainingPercent: ', this.minRemainingPercent)
+    console.log('')
   }
 }

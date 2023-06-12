@@ -11,12 +11,12 @@ class Game {
     this.Positions = {
       pos1: {
         landscape: {
-          x: 200,
-          y: 200,
+          x: 0,
+          y: 0,
         },
         portrait: {
-          x: 300,
-          y: 300,
+          x: 200,
+          y: 200,
         },
       },
       pos2: {

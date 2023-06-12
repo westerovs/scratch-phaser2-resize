@@ -27,12 +27,7 @@ export default class ScratchBlock {
   }
 
   #createBlock = () => {
-    if (window.matchMedia('(orientation: portrait)').matches) {
-      this.sprite.position.set(this.spritePos.portrait.x, this.spritePos.portrait.y)
-    }
-    if (window.matchMedia('(orientation: landscape)').matches) {
-      this.sprite.position.set(this.spritePos.landscape.x, this.spritePos.landscape.y)
-    }
+    this.#spriteResize()
 
     this.bitmapData.draw(this.sprite)
 
@@ -142,15 +137,17 @@ export default class ScratchBlock {
     this.createCopyImage(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
       .then((copyCropImage) => {
         this.bitmapData.context.clearRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
-
-        if (window.matchMedia('(orientation: portrait)').matches) {
-          this.sprite.position.set(this.spritePos.portrait.x, this.spritePos.portrait.y)
-        }
-        if (window.matchMedia('(orientation: landscape)').matches) {
-          this.sprite.position.set(this.spritePos.landscape.x, this.spritePos.landscape.y)
-        }
-
+        this.#spriteResize()
         this.bitmapData.draw(copyCropImage, this.sprite.x, this.sprite.y)
       })
+  }
+
+  #spriteResize = () => {
+    if (window.matchMedia('(orientation: portrait)').matches) {
+      this.sprite.position.set(this.spritePos.portrait.x, this.spritePos.portrait.y)
+    }
+    if (window.matchMedia('(orientation: landscape)').matches) {
+      this.sprite.position.set(this.spritePos.landscape.x, this.spritePos.landscape.y)
+    }
   }
 }

@@ -3,7 +3,7 @@ export default class ScratchBlock {
     game,
     atlas,
     key,
-    minRemainingPercent =null,
+    minRemainingPercent = null,
     spritePos,
     callBack,
   }) {
@@ -17,7 +17,7 @@ export default class ScratchBlock {
     this.bitmapData = this.game.make.bitmapData(1366, 1366)
     this.bitmapData.addToWorld(0, 0)
     this.sprite = this.game.make.image(0, 0, key)
-    this.spriteBrush = this.game.make.image(0, 0, 'brush')
+    this.brush = this.game.make.image(0, 0, 'brush')
 
     this.isDestroyed = false
     this.valuePercentToWin = null
@@ -70,13 +70,13 @@ export default class ScratchBlock {
 
   #pointerdown = () => {
     if (this.sprite.input.pointerOver()) {
-    if (this.game.input.activePointer.isDown) {
-      this.sprite.alpha = 0
+      if (this.game.input.activePointer.isDown) {
+        this.sprite.alpha = 0
 
-      this.#drawBlend()
-      this.#checkWin()
-      console.log('Осталось процентов: ', this.#getAlphaRatio())
-    }
+        this.#drawBlend()
+        this.#checkWin()
+        console.log(this.key, 'Осталось процентов: ', this.#getAlphaRatio())
+      }
     }
   }
 
@@ -98,12 +98,12 @@ export default class ScratchBlock {
     const cursorY = this.game.input.worldY / this.game.factor
 
     this.bitmapData.blendDestinationOut()
-    this.bitmapData.circle(cursorX, cursorY, 50, 'blue')
-    // const offset = {
-    //   x: this.spriteBrush.width / 2,
-    //   y: this.spriteBrush.height / 2
-    // }
-    // this.bitmapData.draw(this.spriteBrush, cursorX - offset.x, cursorY - offset.y)
+    // this.bitmapData.circle(cursorX, cursorY, 50, 'blue')
+    const offset = {
+      x: this.brush.width / 2,
+      y: this.brush.height / 2
+    }
+    this.bitmapData.draw(this.brush, cursorX - offset.x, cursorY - offset.y)
 
     this.bitmapData.blendReset()
     this.bitmapData.dirty = true
@@ -111,7 +111,7 @@ export default class ScratchBlock {
 
   // todo привести к виду от 100% до 0%
   #getAlphaRatio = () => {
-    const { ctx } = this.bitmapData
+    const {ctx} = this.bitmapData
     const imageData = ctx.getImageData(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
     const pixelData = imageData.data
 

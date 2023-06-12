@@ -1,28 +1,55 @@
 export default class ScratchBlock {
   constructor({
     game,
+    atlas,
     key,
-    minRemainingPercent = 0.5,
+    minRemainingPercent =null,
     spritePos,
+    callBack,
   }) {
     this.game = game
+    this.atlas = atlas
     this.key = key
     this.minRemainingPercent = minRemainingPercent
     this.spritePos = spritePos
+    this.callBack = callBack
 
     this.bitmapData = this.game.make.bitmapData(1366, 1366)
     this.bitmapData.addToWorld(0, 0)
     this.sprite = this.game.make.image(0, 0, key)
+    this.spriteBrush = this.game.make.image(0, 0, 'brush')
 
     this.isDestroyed = false
+    this.valuePercentToWin = null
 
     this.init()
   }
 
   init() {
     this.#initializeSprite()
-    window.addEventListener('resize', () => this.#resize())
-    console.log(this.key, 'MAX_PIXELS:', this.#getAlphaRatio())
+    this.#initSignals()
+
+    this.valuePercentToWin = +(this.#getAlphaRatio() * (this.minRemainingPercent / 100)).toFixed(3)
+    // log
+    console.log(this.key, 'MAX_PIXELS:', this.#getAlphaRatio(), '/ min percent % ', this.valuePercentToWin)
+  }
+
+  update() {
+    if (this.isDestroyed) return
+
+    this.#pointerdown()
+    this.#pointerUp()
+  }
+
+  recovery = () => {
+    this.sprite.alpha = 1
+    this.bitmapData.draw(this.sprite, this.sprite.x, this.sprite.y)
+  }
+
+  destroy = () => {
+    this.isDestroyed = true
+    this.sprite.inputEnabled = false
+    this.bitmapData.context.clearRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
   }
 
   #initializeSprite = () => {
@@ -37,21 +64,24 @@ export default class ScratchBlock {
     })
   }
 
-  update() {
-    if (this.isDestroyed) return
-
-    this.#pointerdown()
-    this.#pointerUp()
+  #initSignals = () => {
+    window.addEventListener('resize', () => this.#resize())
   }
 
   #pointerdown = () => {
+    if (this.sprite.input.pointerOver()) {
     if (this.game.input.activePointer.isDown) {
       this.sprite.alpha = 0
 
       this.#drawBlend()
       this.#checkWin()
-      console.log('value alpha:', this.#getAlphaRatio())
+      console.log('Осталось процентов: ', this.#getAlphaRatio())
     }
+    }
+  }
+
+  #pointerOut = () => {
+
   }
 
   #pointerUp = () => {
@@ -63,54 +93,50 @@ export default class ScratchBlock {
     }
   }
 
-  recovery = () => {
-    this.sprite.alpha = 1
-    this.bitmapData.draw(this.sprite, this.sprite.x, this.sprite.y)
-  }
-
   #drawBlend = () => {
     const cursorX = this.game.input.worldX / this.game.factor
     const cursorY = this.game.input.worldY / this.game.factor
-    // const rgba  = this.bitmapData.getPixel(cursorX, cursorY)
 
-    // if (rgba.a > 0) {
     this.bitmapData.blendDestinationOut()
-    // this.bitmapData.circle(cursorX, cursorY, 25, 'blue')
-    this.bitmapData.draw('brush', cursorX - 80, cursorY - 50)
+    this.bitmapData.circle(cursorX, cursorY, 50, 'blue')
+    // const offset = {
+    //   x: this.spriteBrush.width / 2,
+    //   y: this.spriteBrush.height / 2
+    // }
+    // this.bitmapData.draw(this.spriteBrush, cursorX - offset.x, cursorY - offset.y)
+
     this.bitmapData.blendReset()
     this.bitmapData.dirty = true
-    // }
   }
 
   // todo привести к виду от 100% до 0%
   #getAlphaRatio = () => {
-    const {ctx} = this.bitmapData
-    let alphaPixels = 0
+    const { ctx } = this.bitmapData
+    const imageData = ctx.getImageData(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
+    const pixelData = imageData.data
 
-    const {data} = ctx.getImageData(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
+    const alphaPixels = pixelData.reduce((count, value, index) => {
+      // index 0(R), 1(G), 2(B) 3(A)
+      // value > 0 проверяет, является ли значение альфа-канала пикселя больше 0.
+      // Если значение больше 0, это означает, что пиксель непрозрачный.
+      if (index % 4 === 3 && value > 0) {
+        count++
+      }
+      return count
+    }, 0)
 
-    const coefficientBrush = 4 // чем выше число, тем быстрее происходит полная очистка
-    for (let i = 0; i < data.length; i += coefficientBrush) {
-      if (data[i] > 0) alphaPixels++
-    }
-
-    return +(alphaPixels / (ctx.canvas.width * ctx.canvas.height)).toFixed(5)
+    return +((alphaPixels / (this.sprite.width * this.sprite.height)) * 100).toFixed(1)
   }
 
   #checkWin = () => {
-    if (this.#getAlphaRatio() < this.minRemainingPercent) {
-      console.warn('WIN')
+    if (this.minRemainingPercent === null) return
+
+    if (this.#getAlphaRatio() < this.valuePercentToWin) {
       this.destroy()
     }
   }
 
-  destroy = () => {
-    this.isDestroyed = true
-    this.sprite.inputEnabled = false
-    this.bitmapData.context.clearRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
-  }
-
-  getImageURL = (imgData, width, height) => {
+  #getImageURL = (imgData, width, height) => {
     const newCanvas = document.createElement('canvas')
     const ctx = newCanvas.getContext('2d')
     newCanvas.width = width
@@ -120,24 +146,28 @@ export default class ScratchBlock {
     return newCanvas.toDataURL() //image URL
   }
 
-  createCopyImage = (x, y, width, height) => {
+  #createCopyImage = (x, y, width, height) => {
     const imageData = this.bitmapData.ctx.getImageData(x, y, this.sprite.width, this.sprite.height)
 
     const copyImage = new Image()
-    copyImage.src = this.getImageURL(imageData, width, height)
+    copyImage.src = this.#getImageURL(imageData, width, height)
 
     return new Promise(resolve => {
       copyImage.addEventListener('load', () => resolve(copyImage))
     })
   }
 
-  #resize = () => {
-    this.createCopyImage(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
-      .then((copyCropImage) => {
-        this.bitmapData.context.clearRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
-        this.#spriteResize()
-        this.bitmapData.draw(copyCropImage, this.sprite.x, this.sprite.y)
-      })
+  #resize = async () => {
+    const copyCropImage = await this.#createCopyImage(
+      this.sprite.x,
+      this.sprite.y,
+      this.sprite.width,
+      this.sprite.height
+    )
+
+    this.bitmapData.context.clearRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
+    this.#spriteResize()
+    this.bitmapData.draw(copyCropImage, this.sprite.x, this.sprite.y)
   }
 
   #spriteResize = () => {

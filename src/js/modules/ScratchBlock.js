@@ -38,12 +38,12 @@ export default class ScratchBlock {
     if (this.isDestroyed) return
 
     this.#pointerdown()
-    this.#pointerUp()
   }
 
   recovery = () => {
     this.sprite.alpha = 1
     this.bitmapData.draw(this.sprite, this.sprite.x, this.sprite.y)
+    console.log('recovery')
   }
 
   destroy = () => {
@@ -66,6 +66,7 @@ export default class ScratchBlock {
 
   #initSignals = () => {
     window.addEventListener('resize', () => this.#resize())
+    this.game.input.onUp.add(() => this.#pointerUp())
   }
 
   #pointerdown = () => {
@@ -85,11 +86,8 @@ export default class ScratchBlock {
   }
 
   #pointerUp = () => {
-    // если нужно восстанавливать целостность изображение, если оно стёрто меньше чем на minRemainingPercent
-    if (this.game.input.activePointer.isUp) {
-      if (this.#getAlphaRatio() > this.minRemainingPercent) {
-        this.recovery()
-      }
+    if (this.#getAlphaRatio() > this.minRemainingPercent) {
+      this.recovery()
     }
   }
 

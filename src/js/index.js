@@ -64,6 +64,7 @@ class Game {
     this.game.load.image('block1', './src/img/block1.png')
     this.game.load.image('block2', './src/img/block2.png')
     this.game.load.image('block3', './src/img/block3.png')
+    this.game.load.image('chair', './src/img/chair.png')
   }
 
   create = () => {
@@ -73,20 +74,20 @@ class Game {
     this.#initSignals()
     this.scratchBlock1 = new ScratchBlock({
       game: this.game,
-      key: 'block1',
+      key: 'chair',
       minRemainingPercent: 20,
       spritePos: this.Positions.pos1
     })
     this.scratchBlock2 = new ScratchBlock({
       game: this.game,
       key: 'block2',
-      // minRemainingPercent: 20,
+      minRemainingPercent: 20,
       spritePos: this.Positions.pos2
     })
     this.scratchBlock3 = new ScratchBlock({
       game: this.game,
       key: 'block3',
-      // minRemainingPercent: 20,
+      minRemainingPercent: 20,
       spritePos: this.Positions.pos3
     })
   }

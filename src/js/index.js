@@ -74,19 +74,19 @@ class Game {
     this.scratchBlock1 = new ScratchBlock({
       game: this.game,
       key: 'block1',
-      minAlphaRatio: 0.01,
+      minRemainingPercent: 0.01,
       spritePos: this.Positions.pos1
     })
     this.scratchBlock2 = new ScratchBlock({
       game: this.game,
       key: 'block2',
-      minAlphaRatio: 0.01,
+      minRemainingPercent: 0.01,
       spritePos: this.Positions.pos2
     })
     this.scratchBlock3 = new ScratchBlock({
       game: this.game,
       key: 'block3',
-      minAlphaRatio: 0.01,
+      minRemainingPercent: 0.01,
       spritePos: this.Positions.pos3
     })
   }

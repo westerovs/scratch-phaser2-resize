@@ -2,33 +2,31 @@ export default class ScratchBlock {
   constructor({
     game,
     key,
-    minAlphaRatio = 0.5,
+    minRemainingPercent = 0.5,
     spritePos,
   }) {
     this.game = game
     this.key = key
-    this.minAlphaRatio = minAlphaRatio
-    this.disabled = false
-
-    this.sprite = this.game.make.image(0, 0, key)
+    this.minRemainingPercent = minRemainingPercent
     this.spritePos = spritePos
-    this.bitmapData = null
+
+    this.bitmapData = this.game.make.bitmapData(1366, 1366)
+    this.bitmapData.addToWorld(0, 0)
+    this.sprite = this.game.make.image(0, 0, key)
+
+    this.isDestroyed = false
 
     this.init()
   }
 
   init() {
-    this.bitmapData = this.game.make.bitmapData(1000, 1000)
-    this.bitmapData.addToWorld(0, 0)
-
-    this.#createBlock()
+    this.#initializeSprite()
     window.addEventListener('resize', () => this.#resize())
     console.log(this.key, 'MAX_PIXELS:', this.#getAlphaRatio())
   }
 
-  #createBlock = () => {
+  #initializeSprite = () => {
     this.#spriteResize()
-
     this.bitmapData.draw(this.sprite)
 
     this.sprite.alpha = 0
@@ -40,7 +38,7 @@ export default class ScratchBlock {
   }
 
   update() {
-    if (this.disabled) return
+    if (this.isDestroyed) return
 
     this.#pointerdown()
     this.#pointerUp()
@@ -57,9 +55,9 @@ export default class ScratchBlock {
   }
 
   #pointerUp = () => {
-    // если нужно восстанавливать целостность изображение, если оно стёрто меньше чем на minAlphaRatio
+    // если нужно восстанавливать целостность изображение, если оно стёрто меньше чем на minRemainingPercent
     if (this.game.input.activePointer.isUp) {
-      if (this.#getAlphaRatio() > this.minAlphaRatio) {
+      if (this.#getAlphaRatio() > this.minRemainingPercent) {
         this.recovery()
       }
     }
@@ -100,14 +98,14 @@ export default class ScratchBlock {
   }
 
   #checkWin = () => {
-    if (this.#getAlphaRatio() < this.minAlphaRatio) {
+    if (this.#getAlphaRatio() < this.minRemainingPercent) {
       console.warn('WIN')
       this.destroy()
     }
   }
 
   destroy = () => {
-    this.disabled = true
+    this.isDestroyed = true
     this.sprite.inputEnabled = false
     this.bitmapData.context.clearRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
   }

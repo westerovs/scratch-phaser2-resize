@@ -48,6 +48,7 @@ export default class ScratchBlock {
 
   destroy = () => {
     this.isDestroyed = true
+    this.sprite.alpha = 0
     this.sprite.inputEnabled = false
     this.bitmapData.context.clearRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
   }
@@ -55,9 +56,11 @@ export default class ScratchBlock {
   #initializeSprite = () => {
     this.#spriteResize()
     this.bitmapData.draw(this.sprite)
-
-    this.sprite.alpha = 0
     this.sprite.inputEnabled = true
+    this.sprite.input.priorityID = 0
+    this.sprite.input.pixelPerfectOver = true
+    this.sprite.input.pixelPerfectClick = true
+
     this.game.world.add(this.sprite)
     this.sprite.events.onInputOver.add(() => {
       this.game.scratchSignal.dispatch(this.sprite.key, this)

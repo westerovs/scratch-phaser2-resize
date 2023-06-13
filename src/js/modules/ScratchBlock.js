@@ -42,6 +42,7 @@ export default class ScratchBlock {
 
   recovery = () => {
     this.sprite.alpha = 1
+    this.bitmapData.context.clearRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
     this.bitmapData.draw(this.sprite, this.sprite.x, this.sprite.y)
   }
 
@@ -75,6 +76,7 @@ export default class ScratchBlock {
 
         this.#drawBlend()
         this.#checkWin()
+        this.#showLog()
       }
     }
   }
@@ -86,6 +88,7 @@ export default class ScratchBlock {
   #pointerUp = () => {
     if (this.#getAlphaRatio() > this.minRemainingPercent) {
       this.recovery()
+      this.#showLog()
     }
   }
 
@@ -94,18 +97,17 @@ export default class ScratchBlock {
     const cursorY = this.game.input.worldY / this.game.factor
 
     this.bitmapData.blendDestinationOut()
-    // this.bitmapData.circle(cursorX, cursorY, 50, 'blue')
-    const offset = {
-      x: this.brush.width / 2,
-      y: this.brush.height / 2
-    }
-    this.bitmapData.draw(this.brush, cursorX - offset.x, cursorY - offset.y)
+    this.bitmapData.circle(cursorX, cursorY, 50, 'blue')
+    // const offset = {
+    //   x: this.brush.width / 2,
+    //   y: this.brush.height / 2
+    // }
+    // this.bitmapData.draw(this.brush, cursorX - offset.x, cursorY - offset.y)
 
     this.bitmapData.blendReset()
     this.bitmapData.dirty = true
   }
 
-  // todo привести к виду от 100% до 0%
   #getAlphaRatio = () => {
     const {ctx} = this.bitmapData
     const imageData = ctx.getImageData(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
@@ -125,9 +127,10 @@ export default class ScratchBlock {
   }
 
   #checkWin = () => {
-    if (this.minRemainingPercent === null) return
+    // if (!this.minRemainingPercent) return
 
     if (this.#getAlphaRatio() < this.valuePercentToWin) {
+      console.warn(this.key, 'WIN & DESTROY')
       this.destroy()
     }
   }
@@ -183,3 +186,4 @@ export default class ScratchBlock {
     console.log('')
   }
 }
+

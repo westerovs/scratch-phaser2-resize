@@ -53,7 +53,6 @@ export default class ScratchBlock {
     this.isDestroyed = true
     this.game.input.onUp.remove(this.#pointerUp)
     this.sprite.inputEnabled = false
-
     this.sprite.alpha = 0
     this.bitmapData.context.clearRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
 
@@ -93,10 +92,10 @@ export default class ScratchBlock {
   }
 
   #pointerUp = () => {
-    // if (this.#getAlphaRatio() > this.minRemainingPercent) {
-    //   this.recovery()
-    //   this.#showLog()
-    // }
+    if (this.#getAlphaRatio() > this.minRemainingPercent) {
+      this.recovery()
+      this.#showLog()
+    }
   }
 
   #drawBlend = () => {
@@ -142,42 +141,42 @@ export default class ScratchBlock {
     }
   }
 
-  // #getImageURL = (imgData, width, height) => {
-  //   const newCanvas = document.createElement('canvas')
-  //   const ctx = newCanvas.getContext('2d')
-  //   newCanvas.width = width
-  //   newCanvas.height = height
-  //
-  //   ctx.putImageData(imgData, 0, 0)
-  //   return newCanvas.toDataURL() //image URL
-  // }
-  //
-  // #createCopyImage = (x, y, width, height) => {
-  //   const imageData = this.bitmapData.ctx.getImageData(x, y, this.sprite.width, this.sprite.height)
-  //
-  //   const copyImage = new Image()
-  //   copyImage.src = this.#getImageURL(imageData, width, height)
-  //
-  //   return new Promise(resolve => {
-  //     copyImage.addEventListener('load', () => resolve(copyImage))
-  //   })
-  // }
-  //
-  // #drawCopyImage = async () => {
-  //   const copyCropImage = await this.#createCopyImage(
-  //     this.sprite.x,
-  //     this.sprite.y,
-  //     this.sprite.width,
-  //     this.sprite.height
-  //   )
-  //
-  //   this.bitmapData.context.clearRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
-  //   this.#setPositionSprite()
-  //   this.bitmapData.draw(copyCropImage, this.sprite.x, this.sprite.y)
-  // }
+  #getImageURL = (imgData, width, height) => {
+    const newCanvas = document.createElement('canvas')
+    const ctx = newCanvas.getContext('2d')
+    newCanvas.width = width
+    newCanvas.height = height
+
+    ctx.putImageData(imgData, 0, 0)
+    return newCanvas.toDataURL() //image URL
+  }
+
+  #createCopyImage = (x, y, width, height) => {
+    const imageData = this.bitmapData.ctx.getImageData(x, y, this.sprite.width, this.sprite.height)
+
+    const copyImage = new Image()
+    copyImage.src = this.#getImageURL(imageData, width, height)
+
+    return new Promise(resolve => {
+      copyImage.addEventListener('load', () => resolve(copyImage))
+    })
+  }
+
+  #drawCopyImage = async () => {
+    const copyCropImage = await this.#createCopyImage(
+      this.sprite.x,
+      this.sprite.y,
+      this.sprite.width,
+      this.sprite.height
+    )
+
+    this.bitmapData.context.clearRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
+    this.#setPositionSprite()
+    this.bitmapData.draw(copyCropImage, this.sprite.x, this.sprite.y)
+  }
 
   #resize = async () => {
-    // this.#drawCopyImage()
+    this.#drawCopyImage()
   }
 
   #setPositionSprite = () => {

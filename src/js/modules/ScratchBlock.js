@@ -16,6 +16,7 @@ export default class ScratchBlock {
 
     this.bitmapData = this.game.make.bitmapData(1366, 1366)
     this.bitmapData.addToWorld(0, 0)
+
     this.sprite = this.game.make.image(0, 0, key)
     this.brush = this.game.make.image(0, 0, 'brush')
 
@@ -47,14 +48,21 @@ export default class ScratchBlock {
   }
 
   destroy = () => {
+    const cloneSprite = this.#createCloneSprite()
+
     this.isDestroyed = true
-    this.sprite.alpha = 0
+    this.game.input.onUp.remove(this.#pointerUp)
     this.sprite.inputEnabled = false
+
+    this.sprite.alpha = 0
     this.bitmapData.context.clearRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
+
+    this.game.add.tween(cloneSprite)
+      .to({alpha: 0}, 250, Phaser.Easing.Linear.None, true)
   }
 
   #initializeSprite = () => {
-    this.#spriteResize()
+    this.#setPositionSprite()
     this.bitmapData.draw(this.sprite)
     this.sprite.inputEnabled = true
     this.sprite.input.priorityID = 0
@@ -69,7 +77,7 @@ export default class ScratchBlock {
 
   #initSignals = () => {
     window.addEventListener('resize', () => this.#resize())
-    this.game.input.onUp.add(() => this.#pointerUp())
+    this.game.input.onUp.add(this.#pointerUp)
   }
 
   #pointerdown = () => {
@@ -79,20 +87,16 @@ export default class ScratchBlock {
 
         this.#drawBlend()
         this.#checkWin()
-        this.#showLog()
+        // this.#showLog()
       }
     }
   }
 
-  #pointerOut = () => {
-
-  }
-
   #pointerUp = () => {
-    if (this.#getAlphaRatio() > this.minRemainingPercent) {
-      this.recovery()
-      this.#showLog()
-    }
+    // if (this.#getAlphaRatio() > this.minRemainingPercent) {
+    //   this.recovery()
+    //   this.#showLog()
+    // }
   }
 
   #drawBlend = () => {
@@ -138,41 +142,45 @@ export default class ScratchBlock {
     }
   }
 
-  #getImageURL = (imgData, width, height) => {
-    const newCanvas = document.createElement('canvas')
-    const ctx = newCanvas.getContext('2d')
-    newCanvas.width = width
-    newCanvas.height = height
-
-    ctx.putImageData(imgData, 0, 0)
-    return newCanvas.toDataURL() //image URL
-  }
-
-  #createCopyImage = (x, y, width, height) => {
-    const imageData = this.bitmapData.ctx.getImageData(x, y, this.sprite.width, this.sprite.height)
-
-    const copyImage = new Image()
-    copyImage.src = this.#getImageURL(imageData, width, height)
-
-    return new Promise(resolve => {
-      copyImage.addEventListener('load', () => resolve(copyImage))
-    })
-  }
+  // #getImageURL = (imgData, width, height) => {
+  //   const newCanvas = document.createElement('canvas')
+  //   const ctx = newCanvas.getContext('2d')
+  //   newCanvas.width = width
+  //   newCanvas.height = height
+  //
+  //   ctx.putImageData(imgData, 0, 0)
+  //   return newCanvas.toDataURL() //image URL
+  // }
+  //
+  // #createCopyImage = (x, y, width, height) => {
+  //   const imageData = this.bitmapData.ctx.getImageData(x, y, this.sprite.width, this.sprite.height)
+  //
+  //   const copyImage = new Image()
+  //   copyImage.src = this.#getImageURL(imageData, width, height)
+  //
+  //   return new Promise(resolve => {
+  //     copyImage.addEventListener('load', () => resolve(copyImage))
+  //   })
+  // }
+  //
+  // #drawCopyImage = async () => {
+  //   const copyCropImage = await this.#createCopyImage(
+  //     this.sprite.x,
+  //     this.sprite.y,
+  //     this.sprite.width,
+  //     this.sprite.height
+  //   )
+  //
+  //   this.bitmapData.context.clearRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
+  //   this.#setPositionSprite()
+  //   this.bitmapData.draw(copyCropImage, this.sprite.x, this.sprite.y)
+  // }
 
   #resize = async () => {
-    const copyCropImage = await this.#createCopyImage(
-      this.sprite.x,
-      this.sprite.y,
-      this.sprite.width,
-      this.sprite.height
-    )
-
-    this.bitmapData.context.clearRect(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
-    this.#spriteResize()
-    this.bitmapData.draw(copyCropImage, this.sprite.x, this.sprite.y)
+    // this.#drawCopyImage()
   }
 
-  #spriteResize = () => {
+  #setPositionSprite = () => {
     if (window.matchMedia('(orientation: portrait)').matches) {
       this.sprite.position.set(this.spritePos.portrait.x, this.spritePos.portrait.y)
     }
@@ -187,6 +195,19 @@ export default class ScratchBlock {
     console.log('valuePercentToWin: ', this.valuePercentToWin)
     console.log('minRemainingPercent: ', this.minRemainingPercent)
     console.log('')
+  }
+
+  // нужно для плавного исчезания
+  #createCloneSprite = () => {
+    const cloneBitmapData = this.game.add.bitmapData(this.bitmapData.width, this.bitmapData.height)
+    cloneBitmapData.copy(this.bitmapData)
+
+    const cloneSprite = this.game.add.sprite(0, 0, cloneBitmapData)
+    cloneSprite.width = this.sprite.width
+    cloneSprite.height = this.sprite.height
+    cloneSprite.scale.setTo(this.sprite.scale.x, this.sprite.scale.y)
+
+    return cloneSprite
   }
 }
 

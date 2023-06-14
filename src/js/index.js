@@ -72,24 +72,24 @@ class Game {
     this.game.add.image(0, 0, 'bg')
 
     this.#initSignals()
-    // this.scratchBlock1 = new ScratchBlock({
-    //   game: this.game,
-    //   key: 'chair',
-    //   minRemainingPercent: 20,
-    //   spritePos: this.Positions.pos1
-    // })
+    this.scratchBlock1 = new ScratchBlock({
+      game: this.game,
+      key: 'chair',
+      minRemainingPercent: 50,
+      spritePos: this.Positions.pos1
+    })
     this.scratchBlock2 = new ScratchBlock({
       game: this.game,
       key: 'block2',
-      minRemainingPercent: 20,
+      minRemainingPercent: 50,
       spritePos: this.Positions.pos2
     })
-    // this.scratchBlock3 = new ScratchBlock({
-    //   game: this.game,
-    //   key: 'block3',
-    //   minRemainingPercent: 20,
-    //   spritePos: this.Positions.pos3
-    // })
+    this.scratchBlock3 = new ScratchBlock({
+      game: this.game,
+      key: 'block3',
+      minRemainingPercent: 50,
+      spritePos: this.Positions.pos3
+    })
   }
 
   update = () => {

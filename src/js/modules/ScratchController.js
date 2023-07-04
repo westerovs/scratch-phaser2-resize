@@ -1,15 +1,14 @@
-export default class Scratch {
+export default class ScratchController {
   constructor({
     game,
     atlas,
-    minRemainingPercent = 0,
     callBack,
     sprites
   }) {
     this.game = game
     this.atlas = atlas
-    this.minRemainingPercent = minRemainingPercent
-    this.callBack = callBack
+    // this.minRemainingPercent = minRemainingPercent
+    // this.callBack = callBack
     this.sprites = sprites
 
     this.bitmapData = this.game.make.bitmapData(1366, 1366)
@@ -26,8 +25,8 @@ export default class Scratch {
   }
 
   init() {
-    this.createSprites()
-    this.#initSignals()
+    // this.createSprites()
+    // this.#initSignals()
   }
 
   createSprites = () => {
@@ -55,9 +54,9 @@ export default class Scratch {
   }
 
   update() {
-    if (this.isDestroyed) return
-
-    this.#pointerdown()
+    // if (this.isDestroyed) return
+    //
+    // this.#pointerdown()
   }
 
   // recovery = () => {
@@ -80,7 +79,7 @@ export default class Scratch {
   // }
 
   #initSignals = () => {
-    window.addEventListener('resize', () => this.#resize())
+    // window.addEventListener('resize', () => this.#resize())
     // this.game.input.onUp.add(this.#pointerUp)
   }
 
@@ -88,7 +87,7 @@ export default class Scratch {
     this.sprites.forEach(sprite => {
 
       if (sprite.input.pointerOver()) {
-        if (this.game.input.activePointer.isDown) {
+        if (this.game.input.activePointer.isDown && sprite.input.checkPointerDown(this.game.input.activePointer)) {
           console.log(sprite.key, 'is down')
           this.currentSprite = sprite
 
@@ -100,7 +99,6 @@ export default class Scratch {
         }
       }
     })
-
   }
 
   // #pointerUp = () => {

@@ -1,45 +1,11 @@
-import Scratch from './modules/Scratch.js'
+import {getOrientation} from './utils/utils.js'
+import ScratchModel from './modules/ScratchModel.js'
+import ScratchView from './modules/ScratchView.js'
+import ScratchController from './modules/ScratchController.js'
 
 class Game {
   constructor() {
     this.game = null
-
-    this.scratchBlock1 = null
-    this.scratchBlock2 = null
-    this.scratchBlock3 = null
-
-    this.Positions = {
-      pos1: {
-        landscape: {
-          x: 0,
-          y: 0,
-        },
-        portrait: {
-          x: 200,
-          y: 200,
-        },
-      },
-      pos2: {
-        landscape: {
-          x: 200,
-          y: 400,
-        },
-        portrait: {
-          x: 400,
-          y: 400,
-        },
-      },
-      pos3: {
-        landscape: {
-          x: 800,
-          y: 200,
-        },
-        portrait: {
-          x: 600,
-          y: 800,
-        },
-      },
-    }
 
     this.currentScratchData = null
     this.prevScratchData = null
@@ -68,40 +34,37 @@ class Game {
   }
 
   create = () => {
-    this.game.factor = 1
     this.game.add.image(0, 0, 'bg')
-
     this.#initSignals()
 
-    const sprite1 = this.game.make.image(0, 0, 'block1')
-    sprite1._pos = this.Positions.pos1
-    sprite1.key = 'block1'
+    const model = new ScratchModel()
 
-    const sprite2 = this.game.make.image(0, 0, 'block2')
-    sprite2._pos = this.Positions.pos2
-    sprite2.key = 'block2'
-
-    const sprite3 = this.game.make.image(0, 0, 'block3')
-    sprite3._pos = this.Positions.pos3
-    sprite3.key = 'block3'
-
-    this.scratch = new Scratch({
-      game: this.game,
-      key: 'block2',
-      minRemainingPercent: 50,
-      sprites: [sprite1, sprite2, sprite3]
-    })
+    const block1 = new ScratchView(this.game, model.data.sprite1)
+    const block2 = new ScratchView(this.game, model.data.sprite2)
+    const block3 = new ScratchView(this.game, model.data.sprite3)
+    // this.scratch = new ScratchController({
+    //   game: this.game,
+    //   key: 'block2',
+    //   minRemainingPercent: 50,
+    //   sprites: [sprite1, sprite2, sprite3]
+    // })
   }
 
   update = () => {
-    this.scratch.update()
+    // this.scratch.update()
   }
 
   #initSignals = () => {
+    window.addEventListener('resize', () => {
+      const isLandscape = getOrientation()
+      this.game.onResizeSignal.dispatch(isLandscape)
+    })
     // init
     this.game.scratchSignal = new Phaser.Signal()
+    this.game.onResizeSignal = new Phaser.Signal()
     // add
     this.game.scratchSignal.add(this.#prevElementAction)
+    this.game.onResizeSignal.add((data) => console.log(data))
   }
 
   #prevElementAction = (name, scratch) => {

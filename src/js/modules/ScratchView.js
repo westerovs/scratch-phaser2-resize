@@ -1,7 +1,8 @@
+import {getOrientation} from '../utils/utils.js'
+
 export default class ScratchView extends Phaser.Sprite {
   constructor(game, data) {
     super(game, 0, 0, data.key)
-    console.log(data.key)
 
     this.game = game
     this.data = data
@@ -11,19 +12,17 @@ export default class ScratchView extends Phaser.Sprite {
   }
 
   init = () => {
-    this.#setupInteractiveSprite()
-    this.#setPositionSprite()
+    this.#setupSprite()
     this.#initSignals()
   }
 
-  #setupInteractiveSprite = () => {
-    // this.#setPositionSprite(this.sprite)
+  #setupSprite = () => {
+    this.#setPositionSprite(getOrientation())
     // this.bitmapData.draw(this.sprite)
     this.sprite.inputEnabled = true
     this.sprite.input.priorityID = 0
     this.sprite.input.pixelPerfectOver = true
     this.sprite.input.pixelPerfectClick = true
-    // this.sprite.alpha = 0.2
 
     this.game.add.existing(this.sprite)
 
@@ -34,17 +33,21 @@ export default class ScratchView extends Phaser.Sprite {
   }
 
   #initSignals = () => {
-    this.game.onResizeSignal.add(this.#setPositionSprite)
+    this.game.onResizeSignal.add((data) => this.#setPositionSprite(data))
   }
 
-  #setPositionSprite = () => {
-    if (window.matchMedia('(orientation: portrait)').matches) {
-      const {x, y} = this.data.position.portrait
-      this.sprite.position.set(x, y)
-    }
-    if (window.matchMedia('(orientation: landscape)').matches) {
-      const {x, y} = this.data.position.landscape
-      this.sprite.position.set(x, y)
+  #setPositionSprite = (orientation) => {
+    switch (orientation) {
+      case 'portrait': {
+        const {x, y} = this.data.position.portrait
+        this.sprite.position.set(x, y)
+        break
+      }
+      case 'landscape': {
+        const {x, y} = this.data.position.landscape
+        this.sprite.position.set(x, y)
+        break
+      }
     }
   }
 }

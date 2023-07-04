@@ -1,4 +1,4 @@
-import ScratchBlock from './modules/ScratchBlock.js'
+import Scratch from './modules/Scratch.js'
 
 class Game {
   constructor() {
@@ -72,30 +72,29 @@ class Game {
     this.game.add.image(0, 0, 'bg')
 
     this.#initSignals()
-    this.scratchBlock1 = new ScratchBlock({
-      game: this.game,
-      key: 'chair',
-      minRemainingPercent: 50,
-      spritePos: this.Positions.pos1
-    })
-    this.scratchBlock2 = new ScratchBlock({
+
+    const sprite1 = this.game.make.image(0, 0, 'block1')
+    sprite1._pos = this.Positions.pos1
+    sprite1.key = 'block1'
+
+    const sprite2 = this.game.make.image(0, 0, 'block2')
+    sprite2._pos = this.Positions.pos2
+    sprite2.key = 'block2'
+
+    const sprite3 = this.game.make.image(0, 0, 'block3')
+    sprite3._pos = this.Positions.pos3
+    sprite3.key = 'block3'
+
+    this.scratch = new Scratch({
       game: this.game,
       key: 'block2',
       minRemainingPercent: 50,
-      spritePos: this.Positions.pos2
-    })
-    this.scratchBlock3 = new ScratchBlock({
-      game: this.game,
-      key: 'block3',
-      minRemainingPercent: 50,
-      spritePos: this.Positions.pos3
+      sprites: [sprite1, sprite2, sprite3]
     })
   }
 
   update = () => {
-    this.scratchBlock1?.update()
-    this.scratchBlock2?.update()
-    this.scratchBlock3?.update()
+    this.scratch.update()
   }
 
   #initSignals = () => {

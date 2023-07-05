@@ -13,6 +13,7 @@ export default class ScratchModel {
           },
         },
         key: 'block1',
+        valuePercentToWin: null,
         minRemainingPercent: 30,
       },
       sprite2: {
@@ -27,6 +28,7 @@ export default class ScratchModel {
           },
         },
         key: 'block2',
+        valuePercentToWin: null,
         minRemainingPercent: 40,
       },
       sprite3: {
@@ -41,6 +43,7 @@ export default class ScratchModel {
           },
         },
         key: 'block3',
+        valuePercentToWin: null,
         minRemainingPercent: 50,
       },
     }

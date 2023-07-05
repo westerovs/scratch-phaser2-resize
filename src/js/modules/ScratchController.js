@@ -9,26 +9,19 @@ export default class ScratchController {
 
     this.currentSprite = null
     this.brush = this.game.make.image(0, 0, 'brush')
-
     this.bitmapData = bitmapData
 
     this.isDestroyed = false
-    this.valuePercentToWin = null
 
     this.init()
   }
 
   init() {
-    // this.#initSignals()
 
-    // Пример: get AlphaRatio стула = 48.5, делим это на 100(%) и умножаем на нужное мин. число
-    // this.valuePercentToWin = (this.#getAlphaRatio() / 100) * this.minRemainingPercent
-    // this.#showLog()
   }
 
   update() {
     if (this.isDestroyed) return
-
     this.#pointerdown()
   }
 
@@ -49,30 +42,20 @@ export default class ScratchController {
   //
   //   this.game.add.tween(cloneSprite)
   //     .to({alpha: 0}, 250, Phaser.Easing.Linear.None, true)
-  // }
-
-  // #initSignals = () => {
-  //   // this.game.input.onUp.add(this.#pointerUp)
+  //   this.bitmapData.destroy()
   // }
 
   #pointerdown = () => {
     this.views.forEach(view => {
-      this.currentSprite = view.checkPointerPress()
+      this.currentSprite = view.checkPointerDown()
 
       if (this.currentSprite) {
         this.#drawBlend()
-        // this.#checkWin()
-        // this.#showLog()
+        this.#checkWin(view)
+        view.showLog()
       }
     })
   }
-
-  // #pointerUp = () => {
-  //   if (this.#getAlphaRatio() > this.minRemainingPercent) {
-  //     this.recovery()
-  //     this.#showLog()
-  //   }
-  // }
 
   #drawBlend = () => {
     const cursorX = this.game.input.worldX / this.game.factor
@@ -90,7 +73,7 @@ export default class ScratchController {
     this.bitmapData.dirty = true
   }
 
-  #checkWin = () => {
+  #checkWin = (view) => {
     // if (!this.minRemainingPercent) return
 
     // if (this.#getAlphaRatio() < this.valuePercentToWin) {
@@ -98,14 +81,6 @@ export default class ScratchController {
     //   this.destroy()
     // }
   }
-
-  // #showLog = () => {
-  //   console.log(`----------- ${this.key} ----------- `)
-  //   console.log('getAlphaRatio:', this.#getAlphaRatio())
-  //   console.log('valuePercentToWin: ', this.valuePercentToWin)
-  //   console.log('minRemainingPercent: ', this.minRemainingPercent)
-  //   console.log('')
-  // }
 
   // нужно для плавного исчезания
   // #createCloneSprite = () => {

@@ -40,7 +40,7 @@ class Game {
     this.#initSignals()
 
     const bitmapData = this.game.make.bitmapData(1366, 1366)
-    // this.bitmapData.rect(0, 0, this.bitmapData.width, this.bitmapData.height, 'rgba(255, 0, 0, 0.5)')
+    // bitmapData.rect(0, 0, bitmapData.width, bitmapData.height, 'rgba(255, 0, 0, 0.5)')
     bitmapData.addToWorld(0, 0)
 
     const model = new ScratchModel()

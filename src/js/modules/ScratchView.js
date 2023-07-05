@@ -9,22 +9,28 @@ export default class ScratchView extends Phaser.Sprite {
     this.data = data
 
     this.sprite = this
-    this.sprite._data = data
 
     this.init()
+  }
+
+  get percentToWin() {
+    return this.data.valuePercentToWin
   }
 
   init() {
     this.#initSignals()
     this.#setupSprite()
     this.#drawBitmapDataCopySprite()
+    this.#setValuePercentToWin()
+
+    this.showLog()
   }
 
   update = () => {
 
   }
 
-  checkPointerPress = () => {
+  checkPointerDown = () => {
     if (this.sprite.input.pointerOver()) {
       if (this.game.input.activePointer.isDown && this.sprite.input.checkPointerDown(this.game.input.activePointer)) {
         console.log(this.sprite.key, 'pointer is pressed')
@@ -32,6 +38,42 @@ export default class ScratchView extends Phaser.Sprite {
         return this.sprite
       }
     }
+  }
+
+  pointerUp = () => {
+    // if (this.getAlphaRatio() > this.minRemainingPercent) {
+    //   this.recovery()
+    //   this.#showLog()
+    // }
+  }
+
+  getAlphaRatio = () => {
+    const {ctx} = this.bitmapData
+    const imageData = ctx.getImageData(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
+    const pixelData = imageData.data
+
+    const alphaPixels = pixelData.reduce((count, value, index) => {
+      // index 0(R), 1(G), 2(B) 3(A)
+      // value > 0 проверяет, является ли значение альфа-канала пикселя больше 0.
+      // Если значение больше 0, это означает, что пиксель непрозрачный.
+      if (index % 4 === 3 && value > 0) {
+        count++
+      }
+      return count
+    }, 0)
+
+    return +((alphaPixels / (this.sprite.width * this.sprite.height)) * 100).toFixed(1)
+  }
+
+  showLog = () => {
+    console.log(this.data.key, 'percentToWin', this.percentToWin)
+    console.log(this.data.key, 'AlphaRatio', this.getAlphaRatio())
+    console.log(this.data.key, 'minRemainingPercent: ', this.data.minRemainingPercent)
+    console.log('')
+  }
+
+  #setValuePercentToWin = () => {
+    this.data.valuePercentToWin =  (this.getAlphaRatio() / 100) * this.data.minRemainingPercent
   }
 
   #setupSprite = () => {
@@ -51,7 +93,7 @@ export default class ScratchView extends Phaser.Sprite {
   // рисует копию изображения на канвасе, поверх основного спрайта, который в этот момент alpha = 0
   #drawBitmapDataCopySprite = () => {
     this.bitmapData.draw(this.sprite)
-    this.sprite.alpha = 0.2
+    this.sprite.alpha = 0
   }
 
   #initSignals = () => {
@@ -102,23 +144,5 @@ export default class ScratchView extends Phaser.Sprite {
         break
       }
     }
-  }
-
-  #getAlphaRatio = () => {
-    const {ctx} = this.bitmapData
-    const imageData = ctx.getImageData(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
-    const pixelData = imageData.data
-
-    const alphaPixels = pixelData.reduce((count, value, index) => {
-      // index 0(R), 1(G), 2(B) 3(A)
-      // value > 0 проверяет, является ли значение альфа-канала пикселя больше 0.
-      // Если значение больше 0, это означает, что пиксель непрозрачный.
-      if (index % 4 === 3 && value > 0) {
-        count++
-      }
-      return count
-    }, 0)
-
-    return +((alphaPixels / (this.sprite.width * this.sprite.height)) * 100).toFixed(1)
   }
 }

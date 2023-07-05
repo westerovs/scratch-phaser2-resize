@@ -24,19 +24,27 @@ export default class ScratchView extends Phaser.Sprite {
 
   }
 
+  checkPointerPress = () => {
+    if (this.sprite.input.pointerOver()) {
+      if (this.game.input.activePointer.isDown && this.sprite.input.checkPointerDown(this.game.input.activePointer)) {
+        console.log(this.sprite.key, 'pointer is pressed')
+
+        return this.sprite
+      }
+    }
+  }
+
   #setupSprite = () => {
     this.#setPositionSprite(getOrientation())
-    // this.bitmapData.draw(this.sprite)
     this.sprite.inputEnabled = true
     this.sprite.input.priorityID = 0
     this.sprite.input.pixelPerfectOver = true
     this.sprite.input.pixelPerfectClick = true
-
     this.game.add.existing(this.sprite)
 
     this.sprite.events.onInputOver.add(() => {
-      console.log(this.sprite.key, 'over')
-      // this.game.scratchSignal.dispatch(sprite.key, this)
+      console.log(this.sprite.key, 'is over')
+      // this.game.scratchSignal.dispatch(this.sprite.key, this)
     })
   }
 
@@ -94,5 +102,23 @@ export default class ScratchView extends Phaser.Sprite {
         break
       }
     }
+  }
+
+  #getAlphaRatio = () => {
+    const {ctx} = this.bitmapData
+    const imageData = ctx.getImageData(this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height)
+    const pixelData = imageData.data
+
+    const alphaPixels = pixelData.reduce((count, value, index) => {
+      // index 0(R), 1(G), 2(B) 3(A)
+      // value > 0 проверяет, является ли значение альфа-канала пикселя больше 0.
+      // Если значение больше 0, это означает, что пиксель непрозрачный.
+      if (index % 4 === 3 && value > 0) {
+        count++
+      }
+      return count
+    }, 0)
+
+    return +((alphaPixels / (this.sprite.width * this.sprite.height)) * 100).toFixed(1)
   }
 }

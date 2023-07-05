@@ -35,6 +35,7 @@ class Game {
   }
 
   create = () => {
+    this.game.factor = 1
     this.game.add.image(0, 0, 'bg')
     this.#initSignals()
 

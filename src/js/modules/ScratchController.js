@@ -19,12 +19,7 @@ export default class ScratchController {
   }
 
   init() {
-    console.log('init controller')
-    this.views.forEach(view => {
-      // this.bitmapData.draw(view)
-      // view.alpha = 0
-    })
-    this.#initSignals()
+    // this.#initSignals()
 
     // Пример: get AlphaRatio стула = 48.5, делим это на 100(%) и умножаем на нужное мин. число
     // this.valuePercentToWin = (this.#getAlphaRatio() / 100) * this.minRemainingPercent
@@ -32,9 +27,9 @@ export default class ScratchController {
   }
 
   update() {
-    // if (this.isDestroyed) return
-    //
-    // this.#pointerdown()
+    if (this.isDestroyed) return
+
+    this.#pointerdown()
   }
 
   // recovery = () => {
@@ -56,26 +51,18 @@ export default class ScratchController {
   //     .to({alpha: 0}, 250, Phaser.Easing.Linear.None, true)
   // }
 
-  #initSignals = () => {
-
-    // window.addEventListener('resize', () => this.#resize())
-    // this.game.input.onUp.add(this.#pointerUp)
-  }
+  // #initSignals = () => {
+  //   // this.game.input.onUp.add(this.#pointerUp)
+  // }
 
   #pointerdown = () => {
-    this.views.forEach(sprite => {
+    this.views.forEach(view => {
+      this.currentSprite = view.checkPointerPress()
 
-      if (sprite.input.pointerOver()) {
-        if (this.game.input.activePointer.isDown && sprite.input.checkPointerDown(this.game.input.activePointer)) {
-          console.log(sprite.key, 'is down')
-          this.currentSprite = sprite
-
-          sprite.alpha = 0
-
-          this.#drawBlend()
-          // this.#checkWin()
-          // this.#showLog()
-        }
+      if (this.currentSprite) {
+        this.#drawBlend()
+        // this.#checkWin()
+        // this.#showLog()
       }
     })
   }
@@ -103,31 +90,13 @@ export default class ScratchController {
     this.bitmapData.dirty = true
   }
 
-  #getAlphaRatio = () => {
-    const {ctx} = this.bitmapData
-    const imageData = ctx.getImageData(this.currentSprite.x, this.currentSprite.y, this.currentSprite.width, this.currentSprite.height)
-    const pixelData = imageData.data
-
-    const alphaPixels = pixelData.reduce((count, value, index) => {
-      // index 0(R), 1(G), 2(B) 3(A)
-      // value > 0 проверяет, является ли значение альфа-канала пикселя больше 0.
-      // Если значение больше 0, это означает, что пиксель непрозрачный.
-      if (index % 4 === 3 && value > 0) {
-        count++
-      }
-      return count
-    }, 0)
-
-    return +((alphaPixels / (this.currentSprite.width * this.currentSprite.height)) * 100).toFixed(1)
-  }
-
   #checkWin = () => {
     // if (!this.minRemainingPercent) return
 
-    if (this.#getAlphaRatio() < this.valuePercentToWin) {
-      console.warn(this.key, 'WIN & DESTROY')
-      this.destroy()
-    }
+    // if (this.#getAlphaRatio() < this.valuePercentToWin) {
+    //   console.warn(this.key, 'WIN & DESTROY')
+    //   this.destroy()
+    // }
   }
 
   // #showLog = () => {

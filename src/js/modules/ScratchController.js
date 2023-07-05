@@ -1,22 +1,16 @@
 export default class ScratchController {
   constructor({
     game,
-    atlas,
-    callBack,
-    sprites
+    bitmapData,
+    views,
   }) {
     this.game = game
-    this.atlas = atlas
-    // this.minRemainingPercent = minRemainingPercent
-    // this.callBack = callBack
-    this.sprites = sprites
-
-    this.bitmapData = this.game.make.bitmapData(1366, 1366)
-    // this.bitmapData.rect(0, 0, this.bitmapData.width, this.bitmapData.height, 'rgba(255, 0, 0, 0.5)')
-    this.bitmapData.addToWorld(0, 0)
+    this.views = views
 
     this.currentSprite = null
     this.brush = this.game.make.image(0, 0, 'brush')
+
+    this.bitmapData = bitmapData
 
     this.isDestroyed = false
     this.valuePercentToWin = null
@@ -25,28 +19,12 @@ export default class ScratchController {
   }
 
   init() {
-    // this.createSprites()
-    // this.#initSignals()
-  }
-
-  createSprites = () => {
-    this.sprites.forEach(sprite => this.#initializeSprite(sprite))
-  }
-
-  #initializeSprite = (sprite) => {
-    this.#setPositionSprite(sprite)
-    this.bitmapData.draw(sprite)
-    sprite.inputEnabled = true
-    sprite.input.priorityID = 0
-    sprite.input.pixelPerfectOver = true
-    sprite.input.pixelPerfectClick = true
-    sprite.alpha = 0.2
-
-    this.game.world.add(sprite)
-    sprite.events.onInputOver.add(() => {
-      console.log(sprite.key, 'over')
-      // this.game.scratchSignal.dispatch(sprite.key, this)
+    console.log('init controller')
+    this.views.forEach(view => {
+      // this.bitmapData.draw(view)
+      // view.alpha = 0
     })
+    this.#initSignals()
 
     // Пример: get AlphaRatio стула = 48.5, делим это на 100(%) и умножаем на нужное мин. число
     // this.valuePercentToWin = (this.#getAlphaRatio() / 100) * this.minRemainingPercent
@@ -79,12 +57,13 @@ export default class ScratchController {
   // }
 
   #initSignals = () => {
+
     // window.addEventListener('resize', () => this.#resize())
     // this.game.input.onUp.add(this.#pointerUp)
   }
 
   #pointerdown = () => {
-    this.sprites.forEach(sprite => {
+    this.views.forEach(sprite => {
 
       if (sprite.input.pointerOver()) {
         if (this.game.input.activePointer.isDown && sprite.input.checkPointerDown(this.game.input.activePointer)) {
@@ -148,50 +127,6 @@ export default class ScratchController {
     if (this.#getAlphaRatio() < this.valuePercentToWin) {
       console.warn(this.key, 'WIN & DESTROY')
       this.destroy()
-    }
-  }
-
-  #getImageURL = (imgData, width, height) => {
-    const newCanvas = document.createElement('canvas')
-    const ctx = newCanvas.getContext('2d')
-    newCanvas.width = width
-    newCanvas.height = height
-
-    ctx.putImageData(imgData, 0, 0)
-    return newCanvas.toDataURL() //image URL
-  }
-
-  #createCopyImage = ({x, y, width, height}) => {
-    const imageData = this.bitmapData.ctx.getImageData(x, y, width, height)
-
-    const copyImage = new Image()
-    copyImage.src = this.#getImageURL(imageData, width, height)
-
-    return new Promise(resolve => {
-      copyImage.addEventListener('load', () => resolve(copyImage))
-    })
-  }
-
-  #drawCopyImage = async (sprite) => {
-    const copyCropImage = await this.#createCopyImage(sprite)
-
-    this.bitmapData.context.clearRect(sprite.x, sprite.y, sprite.width, sprite.height)
-    this.#setPositionSprite(sprite)
-    this.bitmapData.draw(copyCropImage, sprite.x, sprite.y)
-  }
-
-  #resize = async () => {
-    this.sprites.forEach(sprite => this.#drawCopyImage(sprite))
-  }
-
-  #setPositionSprite = (sprite) => {
-    if (window.matchMedia('(orientation: portrait)').matches) {
-      console.log('portrait')
-      sprite.position.set(sprite._pos.portrait.x, sprite._pos.portrait.y)
-    }
-    if (window.matchMedia('(orientation: landscape)').matches) {
-      console.log('landscape')
-      sprite.position.set(sprite._pos.landscape.x, sprite._pos.landscape.y)
     }
   }
 

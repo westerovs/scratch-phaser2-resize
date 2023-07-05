@@ -6,6 +6,7 @@ import ScratchController from './modules/ScratchController.js'
 class Game {
   constructor() {
     this.game = null
+    this.scratchController = null
 
     this.currentScratchData = null
     this.prevScratchData = null
@@ -37,21 +38,25 @@ class Game {
     this.game.add.image(0, 0, 'bg')
     this.#initSignals()
 
+    const bitmapData = this.game.make.bitmapData(1366, 1366)
+    // this.bitmapData.rect(0, 0, this.bitmapData.width, this.bitmapData.height, 'rgba(255, 0, 0, 0.5)')
+    bitmapData.addToWorld(0, 0)
+
     const model = new ScratchModel()
 
-    const block1 = new ScratchView(this.game, model.data.sprite1)
-    const block2 = new ScratchView(this.game, model.data.sprite2)
-    const block3 = new ScratchView(this.game, model.data.sprite3)
-    // this.scratch = new ScratchController({
-    //   game: this.game,
-    //   key: 'block2',
-    //   minRemainingPercent: 50,
-    //   sprites: [sprite1, sprite2, sprite3]
-    // })
+    const view1 = new ScratchView(this.game, bitmapData, model.data.sprite1)
+    const view2 = new ScratchView(this.game, bitmapData, model.data.sprite2)
+    const view3 = new ScratchView(this.game, bitmapData, model.data.sprite3)
+
+    this.scratchController = new ScratchController({
+      game: this.game,
+      bitmapData: bitmapData,
+      views: [view1, view2, view3]
+    })
   }
 
   update = () => {
-    // this.scratch.update()
+    this.scratchController.update()
   }
 
   #initSignals = () => {
@@ -64,7 +69,6 @@ class Game {
     this.game.onResizeSignal = new Phaser.Signal()
     // add
     this.game.scratchSignal.add(this.#prevElementAction)
-    this.game.onResizeSignal.add((data) => console.log(data))
   }
 
   #prevElementAction = (name, scratch) => {

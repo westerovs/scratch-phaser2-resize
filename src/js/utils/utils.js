@@ -7,6 +7,17 @@ const getOrientation = () => {
   }
 }
 
+const getImageURL = (imgData, width, height) => {
+  const newCanvas = document.createElement('canvas')
+  const ctx = newCanvas.getContext('2d')
+  newCanvas.width = width
+  newCanvas.height = height
+
+  ctx.putImageData(imgData, 0, 0)
+  return newCanvas.toDataURL() //image URL
+}
+
 export {
   getOrientation,
+  getImageURL,
 }
